@@ -62,7 +62,7 @@
             // txtUDisk
             // 
             this.txtUDisk.Location = new System.Drawing.Point(53, 70);
-            this.txtUDisk.Margin = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.txtUDisk.Margin = new System.Windows.Forms.Padding(8);
             this.txtUDisk.Name = "txtUDisk";
             this.txtUDisk.ReadOnly = true;
             this.txtUDisk.Size = new System.Drawing.Size(479, 43);
@@ -71,7 +71,7 @@
             // btnBrowser
             // 
             this.btnBrowser.Location = new System.Drawing.Point(555, 67);
-            this.btnBrowser.Margin = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.btnBrowser.Margin = new System.Windows.Forms.Padding(8);
             this.btnBrowser.Name = "btnBrowser";
             this.btnBrowser.Size = new System.Drawing.Size(200, 67);
             this.btnBrowser.TabIndex = 1;
@@ -92,7 +92,7 @@
             // txtBenchSize
             // 
             this.txtBenchSize.Location = new System.Drawing.Point(263, 63);
-            this.txtBenchSize.Margin = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.txtBenchSize.Margin = new System.Windows.Forms.Padding(8);
             this.txtBenchSize.Name = "txtBenchSize";
             this.txtBenchSize.ReadOnly = true;
             this.txtBenchSize.Size = new System.Drawing.Size(130, 43);
@@ -101,7 +101,7 @@
             // txtLoop
             // 
             this.txtLoop.Location = new System.Drawing.Point(609, 63);
-            this.txtLoop.Margin = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.txtLoop.Margin = new System.Windows.Forms.Padding(8);
             this.txtLoop.Name = "txtLoop";
             this.txtLoop.ReadOnly = true;
             this.txtLoop.Size = new System.Drawing.Size(130, 43);
@@ -123,9 +123,9 @@
             this.groupBox1.Controls.Add(this.btnBrowser);
             this.groupBox1.Controls.Add(this.txtUDisk);
             this.groupBox1.Location = new System.Drawing.Point(53, 35);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(8);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(8);
             this.groupBox1.Size = new System.Drawing.Size(808, 167);
             this.groupBox1.TabIndex = 8;
             this.groupBox1.TabStop = false;
@@ -137,9 +137,9 @@
             this.groupBox2.Controls.Add(this.groupBox3);
             this.groupBox2.Controls.Add(this.btnStart);
             this.groupBox2.Location = new System.Drawing.Point(53, 218);
-            this.groupBox2.Margin = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.groupBox2.Margin = new System.Windows.Forms.Padding(8);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Padding = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.groupBox2.Padding = new System.Windows.Forms.Padding(8);
             this.groupBox2.Size = new System.Drawing.Size(808, 669);
             this.groupBox2.TabIndex = 9;
             this.groupBox2.TabStop = false;
@@ -148,7 +148,7 @@
             // progressBar1
             // 
             this.progressBar1.Location = new System.Drawing.Point(53, 54);
-            this.progressBar1.Margin = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.progressBar1.Margin = new System.Windows.Forms.Padding(8);
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(544, 89);
             this.progressBar1.TabIndex = 2;
@@ -168,9 +168,9 @@
             this.groupBox3.Controls.Add(this.txt4kResult);
             this.groupBox3.Controls.Add(this.label1);
             this.groupBox3.Location = new System.Drawing.Point(0, 159);
-            this.groupBox3.Margin = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.groupBox3.Margin = new System.Windows.Forms.Padding(8);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Padding = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.groupBox3.Padding = new System.Windows.Forms.Padding(8);
             this.groupBox3.Size = new System.Drawing.Size(808, 511);
             this.groupBox3.TabIndex = 1;
             this.groupBox3.TabStop = false;
@@ -200,7 +200,7 @@
             // txtSeqResult
             // 
             this.txtSeqResult.Location = new System.Drawing.Point(263, 122);
-            this.txtSeqResult.Margin = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.txtSeqResult.Margin = new System.Windows.Forms.Padding(8);
             this.txtSeqResult.Name = "txtSeqResult";
             this.txtSeqResult.ReadOnly = true;
             this.txtSeqResult.Size = new System.Drawing.Size(476, 43);
@@ -219,7 +219,7 @@
             // txtA4kResult
             // 
             this.txtA4kResult.Location = new System.Drawing.Point(263, 257);
-            this.txtA4kResult.Margin = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.txtA4kResult.Margin = new System.Windows.Forms.Padding(8);
             this.txtA4kResult.Name = "txtA4kResult";
             this.txtA4kResult.ReadOnly = true;
             this.txtA4kResult.Size = new System.Drawing.Size(476, 43);
@@ -238,7 +238,7 @@
             // txt4kResult
             // 
             this.txt4kResult.Location = new System.Drawing.Point(263, 181);
-            this.txt4kResult.Margin = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.txt4kResult.Margin = new System.Windows.Forms.Padding(8);
             this.txt4kResult.Name = "txt4kResult";
             this.txt4kResult.ReadOnly = true;
             this.txt4kResult.Size = new System.Drawing.Size(476, 43);
@@ -257,7 +257,7 @@
             // btnStart
             // 
             this.btnStart.Location = new System.Drawing.Point(613, 54);
-            this.btnStart.Margin = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.btnStart.Margin = new System.Windows.Forms.Padding(8);
             this.btnStart.Name = "btnStart";
             this.btnStart.Size = new System.Drawing.Size(141, 89);
             this.btnStart.TabIndex = 0;
@@ -300,8 +300,8 @@
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(16F, 35F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(240F, 240F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(1570, 971);
             this.Controls.Add(this.chart1);
             this.Controls.Add(this.linkLabel1);
@@ -310,7 +310,7 @@
             this.Font = new System.Drawing.Font("Microsoft YaHei", 8.1F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.Margin = new System.Windows.Forms.Padding(8);
             this.MaximizeBox = false;
             this.Name = "Form1";
             this.Text = "Windows To Go磁盘测速";

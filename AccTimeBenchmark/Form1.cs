@@ -44,6 +44,11 @@ namespace AccTimeBenchmark
         private void Form1_Load(object sender, EventArgs e)
         {
             Text += Application.ProductVersion;
+            Graphics graphics = CreateGraphics();
+            float dpiX = graphics.DpiX;
+            Width = (int)(633 * (dpiX / 96.0));
+            Height = (int)(425 * (dpiX / 96.0));
+
         }
         private double write_file_seq(string path)
         {
