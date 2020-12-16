@@ -27,7 +27,7 @@ namespace AccTimeBenchmark
         private static uint file_flags = FILE_FLAG_NO_BUFFERING | FILE_FLAG_WRITE_THROUGH;
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         private static extern SafeFileHandle CreateFile(string lpFileName, FileAccess dwDesiredAccess, FileShare dwShareMode, IntPtr lpSecurityAttributes, FileMode dwCreationDisposition, uint dwFlagsAndAttributes, IntPtr hTemplateFile);
-        private void generate_random_array(byte[] rnd_array)
+        private void GenerateRandomArray(byte[] rnd_array)
         {
             Random random = new Random();
             for (int i = 0; i < rnd_array.Length; i++)
@@ -43,6 +43,7 @@ namespace AccTimeBenchmark
 
         private void Form1_Load(object sender, EventArgs e)
         {
+
             Text += Application.ProductVersion;
             Graphics graphics = CreateGraphics();
             float dpiX = graphics.DpiX;
@@ -50,12 +51,9 @@ namespace AccTimeBenchmark
             Height = (int)(425 * (dpiX / 96.0));
 
         }
-        private double write_file_seq(string path)
+        private double WriteSeq(string path)
         {
-            //progressBar1.Invoke(new Action(() =>
-            //{
-            //    progressBar1.Style = ProgressBarStyle.Marquee;
-            //}));
+
 
             FileInfo fileInfo = new FileInfo(path);
             fileInfo.Delete();
@@ -69,7 +67,7 @@ namespace AccTimeBenchmark
             sw.Start();
             int seqSize = 67108864;
             byte[] seqBuffer = new byte[seqSize];
-            generate_random_array(seqBuffer);
+            GenerateRandomArray(seqBuffer);
             List<double> seqPoints = new List<double>();
             long testDuration = 10 * 1000;
             for (dataLength = 0L; dataLength < 10737418240; dataLength += seqSize)
@@ -93,7 +91,7 @@ namespace AccTimeBenchmark
             fileStream.Close();
             return seqPoints.Average();
         }
-        private double write_file_4k(string path, ref double adjustResult)
+        private double Write4k(string path, ref double adjustResult)
         {
             progressBar1.Invoke(new Action(() =>
             {
@@ -102,7 +100,7 @@ namespace AccTimeBenchmark
 
             Random random = new Random();
             byte[] buffer = new byte[4096];
-            generate_random_array(buffer);
+            GenerateRandomArray(buffer);
 
             SafeFileHandle safeFileHandle = CreateFile(path, FileAccess.ReadWrite, FileShare.None, IntPtr.Zero, FileMode.OpenOrCreate, file_flags, IntPtr.Zero);
             if (safeFileHandle.IsInvalid)
@@ -130,7 +128,7 @@ namespace AccTimeBenchmark
             temp_timer.Start();
             long previousTime = 0L;
             long prenum = 0L;
-           // int loopTimes = 30;
+            // int loopTimes = 30;
             for (long num = 0L; testPoints.Count < LoopTime4k; num += 1L)
             {
                 long num2 = random.Next((int)(dataLength / 4096 + 1));
@@ -138,7 +136,8 @@ namespace AccTimeBenchmark
                 long curTime = temp_timer.ElapsedMilliseconds;
                 if (curTime - previousTime > 500)
                 {
-                    testPoints.Add(((num - prenum) * 4096.0 / 1024 / 1024) / ((curTime - previousTime) / 1000.0));
+                    double curSpeed = ((num - prenum) * 4096.0 / 1024 / 1024) / ((curTime - previousTime) / 1000.0);
+                    testPoints.Add(curSpeed);
                     prenum = num;
                     progressBar1.Invoke(new Action(() =>
                     {
@@ -184,11 +183,17 @@ namespace AccTimeBenchmark
             //result = hiPerfTimer.Duration;
             //adjustResult
             double avg = testPoints.Average();
-            chart1.Invoke(new Action(() => {
-                foreach (var item in testPoints)
+
+            chart1.Invoke(new Action(() =>
+            {
+
+                for (int i = 0; i < testPoints.Count(); i++)
                 {
-                    chart1.Series[0].Points.AddY(item);
+
+                    chart1.Series[0].Points.AddXY(i / 2.0, testPoints[i]);
+
                 }
+
             }));
 
             testPoints.AddRange(testPoints.GetRange(LoopTime4k / 2, LoopTime4k / 2));
@@ -206,7 +211,7 @@ namespace AccTimeBenchmark
                 }
             }
             adjustResult = testPoints.Average();
-           
+
             //chart1.Series[0].Points.AddY
             //textBox1.Invoke(new Action(() =>
             //{
@@ -221,7 +226,7 @@ namespace AccTimeBenchmark
             //return (test4kCount * 4096 / 1024 / 1024) / (temp_timer.ElapsedMilliseconds / 1000.0);
         }
 
-        private double write_access(string path)
+        private double Write_access(string path)
         {
             progressBar1.Invoke(new Action(() =>
             {
@@ -233,7 +238,7 @@ namespace AccTimeBenchmark
             Random random = new Random();
             //HiPerfTimer hiPerfTimer = new HiPerfTimer();
             byte[] buffer = new byte[4096];
-            generate_random_array(buffer);
+            GenerateRandomArray(buffer);
             SafeFileHandle safeFileHandle = CreateFile(path, FileAccess.ReadWrite, FileShare.None, IntPtr.Zero, FileMode.OpenOrCreate, file_flags, IntPtr.Zero);
             if (safeFileHandle.IsInvalid)
             {
@@ -329,20 +334,22 @@ namespace AccTimeBenchmark
             }
             if (btnStart.Text == "开始")
             {
+
+                chart1.Series[0].Points.Clear();
                 tBench = new Thread(() =>
                 {
                     try
                     {
                         double adj4k = 0;
-                        double timeseq = write_file_seq(txtUDisk.Text + "test.bin");
+                        double timeseq = WriteSeq(txtUDisk.Text + "test.bin");
                         SetTxt(txtBenchSize, (dataLength / (1024 * 1024)).ToString());
                         //dataLength
-                        
-                        SetTxt(txtSeqResult, timeseq.ToString() + "MB/S");
+
+                        SetTxt(txtSeqResult, timeseq.ToString("f4") + " MB/s");
                         //txtSeqResult.Invoke(new Action(() => { txtSeqResult.Text = timeseq.ToString() + "MB/S"; }));
-                        double time4k = write_file_4k(txtUDisk.Text + "test.bin", ref adj4k);
-                        txt4kResult.Invoke(new Action(() => { txt4kResult.Text = time4k.ToString() + " MB/S"; }));
-                        txtA4kResult.Invoke(new Action(() => { txtA4kResult.Text = adj4k.ToString() + "MB/S"; }));
+                        double time4k = Write4k(txtUDisk.Text + "test.bin", ref adj4k);
+                        txt4kResult.Invoke(new Action(() => { txt4kResult.Text = time4k.ToString("f4") + " MB/s"; }));
+                        txtA4kResult.Invoke(new Action(() => { txtA4kResult.Text = adj4k.ToString("f4") + " MB/s"; }));
                         File.Delete(txtUDisk.Text + "test.bin");
                         //double timeAcc = write_access(txtUDisk.Text + "test.bin");
                         //txtAccResult.Invoke(new Action(() => { txtAccResult.Text = timeAcc.ToString() + " ms"; }));
@@ -437,6 +444,11 @@ namespace AccTimeBenchmark
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             Process.Start("http://bbs.luobotou.org/forum-88-1.html");
+        }
+
+        private void labelLevel_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("由高到低有Platinum、Gold、Silver、Bronze、Steel共5个等级。\nSilver及以上可用于制作Windows To Go，等级越高使用体验越好。");
         }
     }
 }

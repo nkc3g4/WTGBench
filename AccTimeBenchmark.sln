@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30413.136
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccTimeBenchmark", "AccTimeBenchmark\AccTimeBenchmark.csproj", "{75C4BDDA-8A60-480B-8947-AC89CB7D1DEB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WTGBench", "AccTimeBenchmark\WTGBench.csproj", "{75C4BDDA-8A60-480B-8947-AC89CB7D1DEB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,5 +18,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5511C503-FA68-4492-9123-A689ECA37197}
 	EndGlobalSection
 EndGlobal
