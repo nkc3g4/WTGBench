@@ -21,7 +21,6 @@ namespace AccTimeBenchmark
         private long dataLength = 536866816L;
         private int LoopTime4k = 30;
         //private long test4kCount = 8192 * 8192;
-        private long testAccCount = 128;
         private static uint FILE_FLAG_NO_BUFFERING = 536870912u;
         private static uint FILE_FLAG_WRITE_THROUGH = 2147483648u;
         private static uint file_flags = FILE_FLAG_NO_BUFFERING | FILE_FLAG_WRITE_THROUGH;
@@ -58,10 +57,7 @@ namespace AccTimeBenchmark
             FileInfo fileInfo = new FileInfo(path);
             fileInfo.Delete();
             SafeFileHandle safeFileHandle = CreateFile(path, FileAccess.ReadWrite, FileShare.None, IntPtr.Zero, FileMode.OpenOrCreate, file_flags, IntPtr.Zero);
-            if (safeFileHandle.IsInvalid)
-            {
-                throw new IOException("Could not open file stream.", new Win32Exception());
-            }
+
             FileStream fileStream = new FileStream(safeFileHandle, FileAccess.ReadWrite, 4096, false);
             Stopwatch sw = new Stopwatch();
             sw.Start();
@@ -103,22 +99,11 @@ namespace AccTimeBenchmark
             GenerateRandomArray(buffer);
 
             SafeFileHandle safeFileHandle = CreateFile(path, FileAccess.ReadWrite, FileShare.None, IntPtr.Zero, FileMode.OpenOrCreate, file_flags, IntPtr.Zero);
-            if (safeFileHandle.IsInvalid)
-            {
-                throw new IOException("Could not open file stream.", new Win32Exception());
-            }
+
             FileStream fileStream = new FileStream(safeFileHandle, FileAccess.ReadWrite, 4096, false);
-            //MessageBox.Show(dataLength.ToString());
             fileStream.Position = dataLength;
             fileStream.Write(buffer, 0, 4096);
             Thread.Sleep(500);
-
-            //for (long num = 0L; num < 2561L; num += 1L)
-            //{
-            //    int num2 = random.Next(2561);
-            //    fileStream.Position = num2 * 4096;
-            //    fileStream.Write(buffer, 0, 4096);
-            //}
             progressBar1.Invoke(new Action(() =>
             {
                 progressBar1.Style = ProgressBarStyle.Blocks;
@@ -145,43 +130,15 @@ namespace AccTimeBenchmark
                     }));
                     previousTime = temp_timer.ElapsedMilliseconds;
                 }
-                //if (num % 512 == 1)
-                //{
-                //    previousTime = temp_timer.ElapsedMilliseconds;
-                //}
-                //MessageBox.Show((num2 * 4096).ToString());
                 fileStream.Position = num2 * 4096;
                 fileStream.Write(buffer, 0, 4096);
                 fileStream.Flush();
-
-                //if (num != 0 && num % 512 == 0)
-                //{
-                //    //long cur = temp_timer.ElapsedMilliseconds;
-
-                //    //testPoints.Add((511.0 * 4096 / 1024 / 1024) / ((cur - previousTime) / 1000.0));
-
-                //    //previousTime = temp_timer.ElapsedMilliseconds;
-
-                //    progressBar1.Invoke(new Action(() => {
-                //        progressBar1.Value = (int)(testPoints.Count / 20 * 100.0);
-                //        //progressBar1.Value = (int)(num / (double)test4kCount * 100.0);
-                //    }));
-
-
-                //}
-                //sw.Stop();
-                //Console.WriteLine(sw.ElapsedMilliseconds);
             }
 
             fileStream.Close();
             temp_timer.Stop();
             progressBar1.Invoke(new Action(() => { progressBar1.Value = 100; }));
 
-
-
-            //hiPerfTimer.Stop();
-            //result = hiPerfTimer.Duration;
-            //adjustResult
             double avg = testPoints.Average();
 
             chart1.Invoke(new Action(() =>
@@ -212,97 +169,10 @@ namespace AccTimeBenchmark
             }
             adjustResult = testPoints.Average();
 
-            //chart1.Series[0].Points.AddY
-            //textBox1.Invoke(new Action(() =>
-            //{
-            //    foreach (var item in testPoints)
-            //    {
-
-            //        textBox1.Text += item.ToString() + Environment.NewLine;
-
-            //    }
-            //}));
             return avg;
-            //return (test4kCount * 4096 / 1024 / 1024) / (temp_timer.ElapsedMilliseconds / 1000.0);
         }
 
-        private double Write_access(string path)
-        {
-            progressBar1.Invoke(new Action(() =>
-            {
-                progressBar1.Style = ProgressBarStyle.Marquee;
-            }));
-
-            //FileInfo fileInfo = new FileInfo(path);
-            //fileInfo.Delete();
-            Random random = new Random();
-            //HiPerfTimer hiPerfTimer = new HiPerfTimer();
-            byte[] buffer = new byte[4096];
-            GenerateRandomArray(buffer);
-            SafeFileHandle safeFileHandle = CreateFile(path, FileAccess.ReadWrite, FileShare.None, IntPtr.Zero, FileMode.OpenOrCreate, file_flags, IntPtr.Zero);
-            if (safeFileHandle.IsInvalid)
-            {
-                throw new IOException("Could not open file stream.", new Win32Exception());
-            }
-            FileStream fileStream = new FileStream(safeFileHandle, FileAccess.ReadWrite, 4096, false);
-            fileStream.Position = dataLength;
-            fileStream.Write(buffer, 0, 4096);
-
-            for (long num = 0L; num < 64L; num += 1L)
-            {
-                //this.w_a = num;
-                //generate_random_array(buffer); 
-                int num2 = random.Next(262144);
-                fileStream.Position = num2 * 4096;
-                fileStream.Write(buffer, 0, 512);
-                fileStream.Flush();
-
-                //swTmp.Stop();
-            }
-
-            progressBar1.Invoke(new Action(() =>
-            {
-                progressBar1.Style = ProgressBarStyle.Blocks;
-            }));
-
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            Stopwatch swTmp = new Stopwatch();
-            //hiPerfTimer.Start();
-            for (long num = 0L; num < testAccCount; num += 1L)
-            {
-                if (num % 4 == 0)
-                {
-                    progressBar1.Invoke(new Action(() => { progressBar1.Value = (int)(num / (double)testAccCount * 100.0); }));
-                }
-                //this.w_a = num;
-                //generate_random_array(buffer);
-                //swTmp.Reset();
-                //swTmp.Start();
-                int num2 = random.Next(262144);
-
-                fileStream.Position = num2 * 4096;
-
-
-                fileStream.Write(buffer, 0, 512);
-                fileStream.Flush();
-
-                //swTmp.Stop();
-                //Console.WriteLine(swTmp.ElapsedMilliseconds);
-
-                //swTmp.Stop();
-
-            }
-
-            fileStream.Close();
-            fileStream.Dispose();
-            sw.Stop();
-            progressBar1.Invoke(new Action(() => { progressBar1.Value = 100; }));
-            File.Delete(path);
-            return sw.ElapsedMilliseconds / (double)testAccCount;
-            //hiPerfTimer.Stop();
-            //return hiPerfTimer.Duration / 26214.0;
-        }
+     
 
         private void btnBrowser_Click(object sender, EventArgs e)
         {
@@ -419,8 +289,6 @@ namespace AccTimeBenchmark
                     {
                         MessageBox.Show(ex.ToString());
                     }
-                    //MessageBox.Show(time4k.ToString());
-                    //File.Delete(txtUDisk.Text + "test.bin");
                 });
                 tBench.Start();
                 btnStart.Text = "停止";
