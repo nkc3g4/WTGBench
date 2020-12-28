@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 
@@ -26,6 +27,10 @@ namespace AccTimeBenchmark
         private static uint file_flags = FILE_FLAG_NO_BUFFERING | FILE_FLAG_WRITE_THROUGH;
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         private static extern SafeFileHandle CreateFile(string lpFileName, FileAccess dwDesiredAccess, FileShare dwShareMode, IntPtr lpSecurityAttributes, FileMode dwCreationDisposition, uint dwFlagsAndAttributes, IntPtr hTemplateFile);
+
+        private readonly object threadCntLock = new object();
+        private int threadCnt;
+        private DateTime start4kTime;
         private void GenerateRandomArray(byte[] rnd_array)
         {
             Random random = new Random();
@@ -42,17 +47,23 @@ namespace AccTimeBenchmark
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            SWOnline swo = new SWOnline("https://bbs.luobotou.org/app/wtgbench.txt");
+            Thread threadUpdate = new Thread(swo.Update);
+            threadUpdate.Start();
 
             Text += Application.ProductVersion;
             Graphics graphics = CreateGraphics();
             float dpiX = graphics.DpiX;
-            Width = (int)(633 * (dpiX / 96.0));
+            Width = (int)(900 * (dpiX / 96.0));
             Height = (int)(425 * (dpiX / 96.0));
 
+         
+
         }
-        private double WriteSeq(string path)
+        private double WriteSeq(string path, object ctobj)
         {
 
+            CancellationToken token = (CancellationToken)ctobj;
 
             FileInfo fileInfo = new FileInfo(path);
             fileInfo.Delete();
@@ -68,6 +79,10 @@ namespace AccTimeBenchmark
             long testDuration = 10 * 1000;
             for (dataLength = 0L; dataLength < 10737418240; dataLength += seqSize)
             {
+                if (token.IsCancellationRequested)
+                {
+                    break;
+                }
                 fileStream.Position = dataLength;
 
                 long preTime = sw.ElapsedMilliseconds;
@@ -87,8 +102,118 @@ namespace AccTimeBenchmark
             fileStream.Close();
             return seqPoints.Average();
         }
-        private double Write4k(string path, ref double adjustResult)
+        private long ReadWrite(FileStream fileStream, long dataLength, byte[] buffer, int[] ioSizes, long runTime, float seqness, float writep, object ctobj)
         {
+            CancellationToken token = (CancellationToken)ctobj;
+            Random random = new Random();
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            long num = 0L;
+            long previousPosition = 0L;
+            for (; sw.ElapsedMilliseconds <= runTime; num += 1L)
+            {
+                int length = ioSizes[random.Next(10)];
+                if (token.IsCancellationRequested)
+                {
+                    break;
+                }
+                if (length == 0)
+                    continue;
+                long num2 = random.Next((int)(dataLength / length + 1));
+
+                if (random.NextDouble() < seqness)
+                {
+                    fileStream.Position = previousPosition;
+                }
+                else
+                {
+                    fileStream.Position = num2 * length;
+                }
+                if (random.NextDouble() < writep)
+                {
+                    fileStream.Write(buffer, 0, length);
+                }
+                else
+                {
+                    fileStream.Read(buffer, 0, length);
+                }
+                previousPosition = num2 * length + length;
+
+                fileStream.Flush();
+            }
+
+
+            return num;
+        }
+        private long RandomReadWrite(FileStream fileStream, byte[] buffer, int length, long runTime,bool write, object ctobj)
+        {
+            CancellationToken token = (CancellationToken)ctobj;
+            Random random = new Random();
+            GenerateRandomArray(buffer);
+            while (DateTime.Now < start4kTime)
+            {
+                Thread.Sleep(10);
+            }
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            long num = 0L;
+            for (; sw.ElapsedMilliseconds <= runTime; num += 1L)
+            {
+                if (token.IsCancellationRequested)
+                {
+                    break;
+                }
+                long num2 = random.Next((int)(dataLength / length + 1));
+
+                fileStream.Position = num2 * length;
+                if (write)
+                    fileStream.Write(buffer, 0, length);
+                else
+                    fileStream.Read(buffer, 0, length);
+                fileStream.Flush();
+            }
+
+
+            return num;
+        }
+
+        private double Write4K_MultiThread(string path, int threadCount, List<FileStream> fsList, object ctobj)
+        {
+            long runTime = 30000;
+            int length = 4096;
+            byte[] buffer = new byte[length];
+            GenerateRandomArray(buffer);
+
+            //Thread.Sleep((int)runTime);
+            start4kTime = DateTime.Now.AddSeconds(30);
+            Task<long>[] taskArray = new Task<long>[threadCount];
+            for (int i = 0; i < taskArray.Length; i++)
+            {
+                int index = i;
+                taskArray[index] = Task<long>.Factory.StartNew(() =>
+                {
+                    Console.WriteLine(index);
+                    return RandomReadWrite(fsList[index], buffer, length, runTime,true, ctobj);
+                }, (CancellationToken)ctobj);
+
+            }
+            Task.WaitAll(taskArray);
+            long total_IO = 0;
+            for (int i = 0; i < taskArray.Length; i++)
+            {
+                Console.WriteLine(taskArray[i].Result);
+                total_IO += taskArray[i].Result;
+
+            }
+            Console.WriteLine("Finish");
+
+            return total_IO / 30.0 * 4096.0 / 1024 / 1024;
+        }
+        private double Write4k(string path, ref double adjustResult, object ctsobj)
+        {
+            CancellationToken token = (CancellationToken)ctsobj;
+
             progressBar1.Invoke(new Action(() =>
             {
                 progressBar1.Style = ProgressBarStyle.Marquee;
@@ -116,6 +241,11 @@ namespace AccTimeBenchmark
             // int loopTimes = 30;
             for (long num = 0L; testPoints.Count < LoopTime4k; num += 1L)
             {
+                if (token.IsCancellationRequested)
+                {
+
+                    break;
+                }
                 long num2 = random.Next((int)(dataLength / 4096 + 1));
 
                 long curTime = temp_timer.ElapsedMilliseconds;
@@ -172,7 +302,7 @@ namespace AccTimeBenchmark
             return avg;
         }
 
-     
+
 
         private void btnBrowser_Click(object sender, EventArgs e)
         {
@@ -202,93 +332,62 @@ namespace AccTimeBenchmark
                 MessageBox.Show("请选择移动磁盘");
                 return;
             }
+            if (checkBoxScenario.Checked)
+            {
+                //Write4K_MultiThread(txtUDisk.Text + "test.bin", 16);
+                //return;
+            }
+            CancellationTokenSource cts = new CancellationTokenSource();
+
             if (btnStart.Text == "开始")
             {
 
-                chart1.Series[0].Points.Clear();
                 tBench = new Thread(() =>
                 {
                     try
                     {
-                        double adj4k = 0;
-                        double timeseq = WriteSeq(txtUDisk.Text + "test.bin");
-                        SetTxt(txtBenchSize, (dataLength / (1024 * 1024)).ToString());
-                        //dataLength
 
-                        SetTxt(txtSeqResult, timeseq.ToString("f4") + " MB/s");
-                        //txtSeqResult.Invoke(new Action(() => { txtSeqResult.Text = timeseq.ToString() + "MB/S"; }));
-                        double time4k = Write4k(txtUDisk.Text + "test.bin", ref adj4k);
-                        txt4kResult.Invoke(new Action(() => { txt4kResult.Text = time4k.ToString("f4") + " MB/s"; }));
-                        txtA4kResult.Invoke(new Action(() => { txtA4kResult.Text = adj4k.ToString("f4") + " MB/s"; }));
-                        File.Delete(txtUDisk.Text + "test.bin");
-                        //double timeAcc = write_access(txtUDisk.Text + "test.bin");
-                        //txtAccResult.Invoke(new Action(() => { txtAccResult.Text = timeAcc.ToString() + " ms"; }));
-                        btnStart.Invoke(new Action(() => { btnStart.Text = "开始"; }));
+                        if (checkBoxFast.Checked)
+                            FastBenchmark(cts.Token);
+                        if (checkBoxThread.Checked)
+                        {
+                            if (DiskOperation.GetHardDiskFreeSpace(txtUDisk.Text.Substring(0, 2) + "\\") < 20 * 1024 * 1024)
+                            {
+                                MessageBox.Show("至少需要20GB可用空间进行测试！");
+                                return;
+                            }
+                            if (checkBoxFast.Checked)
+                                Thread.Sleep(10000);
+                            MultiThreadBenchmark(cts.Token);
 
-                        double score = adj4k + Math.Log(1 + (timeseq / 1000));
-                        //MessageBox.Show(bmr.Write4K.ToString());
-                        int lv = 0;
-                        if (score > 30)
-                        {
-                            lv = 5;
                         }
-                        else if (score > 10)
+                        if (checkBoxScenario.Checked)
                         {
-                            lv = 4;
-                        }
-                        else if (score > 0.8)
-                        {
-                            lv = 3;
-                        }
-                        else if (score > 0.3)
-                        {
-                            lv = 2;
-                        }
-                        else
-                        {
-                            lv = 1;
-                        }
+                            if (DiskOperation.GetHardDiskFreeSpace(txtUDisk.Text.Substring(0, 2) + "\\") < 20 * 1024 * 1024)
+                            {
+                                MessageBox.Show("至少需要20GB可用空间进行测试！");
+                                return;
+                            }
+                            progressBar1.Invoke(new Action(() =>
+                            {
+                                progressBar1.Style = ProgressBarStyle.Marquee;
+                            }));
+                            List<Scenario> scenarios = new List<Scenario>();
+                            scenarios.Add(CSVReader.Read(@".\Scenarios\normal_web.csv"));
 
-                        string ln = "Error";
-                        Color lc = Color.Yellow;
-
-                        if (lv == 1)
-                        {
-                            ln = "Steel";
-                            lc = Color.SteelBlue;
+                            long total_IO = ScenarioBenchmark(scenarios, cts.Token);
+                            labelSceRes.Invoke(new Action(() => { labelSceRes.Text = (total_IO / 1000).ToString(); }));
+                            progressBar1.Invoke(new Action(() =>
+                            {
+                                progressBar1.Style = ProgressBarStyle.Blocks;
+                            }));
                         }
-                        else if (lv == 2)
-                        {
-                            ln = "Bronze";
-                            lc = Color.Crimson;
-                        }
-                        else if (lv == 3)
-                        {
-                            ln = "Silver";
-                            lc = Color.Silver;
-                        }
-                        else if (lv == 4)
-                        {
-                            ln = "Gold";
-                            lc = Color.Gold;
-                        }
-                        else if (lv == 5)
-                        {
-                            ln = "Platinum";
-                            lc = Color.White;
-                        }
-                        labelLevel.Invoke(new Action(() =>
-                        {
-                            labelLevel.Text = ln;
-                            labelLevel.ForeColor = lc;
-                        }));
-
-
                     }
                     catch (Exception ex)
                     {
                         MessageBox.Show(ex.ToString());
                     }
+                    btnStart.Invoke(new Action(() => { btnStart.Text = "开始"; }));
                 });
                 tBench.Start();
                 btnStart.Text = "停止";
@@ -297,11 +396,206 @@ namespace AccTimeBenchmark
             {
                 if (tBench != null)
                 {
+                    cts.Cancel();
+
                     tBench.Abort();
+                    Environment.Exit(0);
+
                 }
                 btnStart.Text = "开始";
             }
 
+
+        }
+        private long ScenarioBenchmark(List<Scenario> scenarios, object ctobj)
+        {
+            string path = txtUDisk.Text + "test.bin";
+            int length = 4096;
+            int runTime = 5000;
+            List<FileStream> fsList = new List<FileStream>();
+            byte[] buffer = new byte[length];
+            GenerateRandomArray(buffer);
+            dataLength = 536866816L;
+            for (int i = 0; i < 32; i++)
+            {
+                File.Delete(path + i.ToString());
+                SafeFileHandle safeFileHandle = CreateFile(path + i.ToString(), FileAccess.ReadWrite, FileShare.None, IntPtr.Zero, FileMode.OpenOrCreate, file_flags, IntPtr.Zero);
+
+                FileStream fileStream = new FileStream(safeFileHandle, FileAccess.ReadWrite, length, false);
+                fileStream.Position = dataLength;
+                fileStream.Write(buffer, 0, length);
+
+                fsList.Add(fileStream);
+            }
+            buffer = new byte[16777216];
+            GenerateRandomArray(buffer);
+            Thread.Sleep(10000);
+            long total_IO = 0;
+            foreach (var sce in scenarios)
+            {
+                foreach (var testLine in sce.TestLines)
+                {
+                    Task<long>[] taskArray = new Task<long>[testLine.Threads];
+                    for (int i = 0; i < taskArray.Length; i++)
+                    {
+                        int index = i;
+                        taskArray[index] = Task<long>.Factory.StartNew(() =>
+                        {
+                            Console.WriteLine(index);
+                            return ReadWrite(fsList[index], dataLength, buffer, testLine.IOSizes, runTime, testLine.SeqNess, testLine.WriteProportion, ctobj);
+                        }, (CancellationToken)ctobj);
+
+                    }
+                    Task.WaitAll(taskArray);
+                    for (int i = 0; i < taskArray.Length; i++)
+                    {
+                        total_IO += taskArray[i].Result;
+                    }
+                }
+                Thread.Sleep(10000);
+            }
+            for (int i = 0; i < 32; i++)
+            {
+                fsList[i].Close();
+                File.Delete(path + i.ToString());
+            }
+            return total_IO;
+
+
+        }
+        private void MultiThreadBenchmark(object ctobj)
+        {
+            chartThreads.Invoke(new Action(() =>
+            {
+                chartThreads.ChartAreas[0].AxisX.IsLogarithmic = false;
+                chartThreads.Series[0].Points.Clear();
+
+            }));
+            progressBar1.Invoke(new Action(() =>
+            {
+                progressBar1.Style = ProgressBarStyle.Marquee;
+            }));
+            string path = txtUDisk.Text + "test.bin";
+            int length = 4096;
+            List<FileStream> fsList = new List<FileStream>();
+            byte[] buffer = new byte[length];
+            GenerateRandomArray(buffer);
+            dataLength = 536866816L;
+            for (int i = 0; i < 32; i++)
+            {
+                File.Delete(path + i.ToString());
+                SafeFileHandle safeFileHandle = CreateFile(path + i.ToString(), FileAccess.ReadWrite, FileShare.None, IntPtr.Zero, FileMode.OpenOrCreate, file_flags, IntPtr.Zero);
+
+                FileStream fileStream = new FileStream(safeFileHandle, FileAccess.ReadWrite, length, false);
+                fileStream.Position = dataLength;
+                fileStream.Write(buffer, 0, length);
+
+                fsList.Add(fileStream);
+            }
+
+            for (int i = 0; i <= 5; i++)
+            {
+
+                double result = Write4K_MultiThread(txtUDisk.Text + "test.bin", 1 << i, fsList, ctobj);
+                chartThreads.Invoke(new Action(() =>
+                {
+                    chartThreads.Series[0].Points.AddXY(1 << i, result);
+                    chartThreads.ChartAreas[0].AxisX.IsLogarithmic = true;
+                }));
+                if (i < 5)
+                    Thread.Sleep(20000);
+            }
+            for (int i = 0; i < 32; i++)
+            {
+                fsList[i].Close();
+                File.Delete(path + i.ToString());
+            }
+            progressBar1.Invoke(new Action(() =>
+            {
+                progressBar1.Style = ProgressBarStyle.Continuous;
+                progressBar1.Value = 100;
+            }));
+
+        }
+
+        private void FastBenchmark(object ctobj)
+        {
+            chart1.Invoke(new Action(() =>
+            {
+                chart1.Series[0].Points.Clear();
+            }));
+            double adj4k = 0;
+            double timeseq = WriteSeq(txtUDisk.Text + "test.bin", ctobj);
+            SetTxt(txtBenchSize, (dataLength / (1024 * 1024)).ToString());
+            //dataLength
+
+            SetTxt(txtSeqResult, timeseq.ToString("f4") + " MB/s");
+            //txtSeqResult.Invoke(new Action(() => { txtSeqResult.Text = timeseq.ToString() + "MB/S"; }));
+            double time4k = Write4k(txtUDisk.Text + "test.bin", ref adj4k, ctobj);
+            txt4kResult.Invoke(new Action(() => { txt4kResult.Text = time4k.ToString("f4") + " MB/s"; }));
+            txtA4kResult.Invoke(new Action(() => { txtA4kResult.Text = adj4k.ToString("f4") + " MB/s"; }));
+            File.Delete(txtUDisk.Text + "test.bin");
+            //double timeAcc = write_access(txtUDisk.Text + "test.bin");
+            //txtAccResult.Invoke(new Action(() => { txtAccResult.Text = timeAcc.ToString() + " ms"; }));
+            //btnStart.Invoke(new Action(() => { btnStart.Text = "开始"; }));
+
+            double score = adj4k + Math.Log(1 + (timeseq / 1000));
+            //MessageBox.Show(bmr.Write4K.ToString());
+            int lv = 0;
+            if (score > 30)
+            {
+                lv = 5;
+            }
+            else if (score > 10)
+            {
+                lv = 4;
+            }
+            else if (score > 0.8)
+            {
+                lv = 3;
+            }
+            else if (score > 0.3)
+            {
+                lv = 2;
+            }
+            else
+            {
+                lv = 1;
+            }
+
+            string ln = "Error";
+            Color lc = Color.Yellow;
+
+            if (lv == 1)
+            {
+                ln = "Steel";
+                lc = Color.SteelBlue;
+            }
+            else if (lv == 2)
+            {
+                ln = "Bronze";
+                lc = Color.Crimson;
+            }
+            else if (lv == 3)
+            {
+                ln = "Silver";
+                lc = Color.Silver;
+            }
+            else if (lv == 4)
+            {
+                ln = "Gold";
+                lc = Color.Gold;
+            }
+            else if (lv == 5)
+            {
+                ln = "Platinum";
+                lc = Color.White;
+            }
+            labelLevel.Invoke(new Action(() =>
+            {
+                labelLevel.Text = ln;
+                labelLevel.ForeColor = lc;
+            }));
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -317,6 +611,16 @@ namespace AccTimeBenchmark
         private void labelLevel_Click(object sender, EventArgs e)
         {
             MessageBox.Show("由高到低有Platinum、Gold、Silver、Bronze、Steel共5个等级。\nSilver及以上可用于制作Windows To Go，等级越高使用体验越好。");
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            Process.Start("http://bbs.luobotou.org/forum-88-1.html");
+        }
+
+        private void pictureBox2_Click(object sender, EventArgs e)
+        {
+            Process.Start("http://bbs.luobotou.org/forum-88-1.html");
         }
     }
 }
