@@ -55,9 +55,9 @@ namespace AccTimeBenchmark
             Graphics graphics = CreateGraphics();
             float dpiX = graphics.DpiX;
             Width = (int)(900 * (dpiX / 96.0));
-            Height = (int)(425 * (dpiX / 96.0));
+            Height = (int)(650 * (dpiX / 96.0));
 
-         
+
 
         }
         private double WriteSeq(string path, object ctobj)
@@ -146,7 +146,7 @@ namespace AccTimeBenchmark
 
             return num;
         }
-        private long RandomReadWrite(FileStream fileStream, byte[] buffer, int length, long runTime,bool write, object ctobj)
+        private long RandomReadWrite(FileStream fileStream, byte[] buffer, int length, long runTime, bool write, object ctobj)
         {
             CancellationToken token = (CancellationToken)ctobj;
             Random random = new Random();
@@ -194,7 +194,7 @@ namespace AccTimeBenchmark
                 taskArray[index] = Task<long>.Factory.StartNew(() =>
                 {
                     Console.WriteLine(index);
-                    return RandomReadWrite(fsList[index], buffer, length, runTime,true, ctobj);
+                    return RandomReadWrite(fsList[index], buffer, length, runTime, true, ctobj);
                 }, (CancellationToken)ctobj);
 
             }
@@ -210,6 +210,7 @@ namespace AccTimeBenchmark
 
             return total_IO / 30.0 * 4096.0 / 1024 / 1024;
         }
+
         private double Write4k(string path, ref double adjustResult, object ctsobj)
         {
             CancellationToken token = (CancellationToken)ctsobj;
@@ -360,6 +361,11 @@ namespace AccTimeBenchmark
                                 Thread.Sleep(10000);
                             MultiThreadBenchmark(cts.Token);
 
+                        }
+                        if (checkBoxFullSeq.Checked)
+                        {
+                            FullSeqBenchmark(cts.Token);
+                            Thread.Sleep(10000);
                         }
                         if (checkBoxScenario.Checked)
                         {
@@ -517,7 +523,77 @@ namespace AccTimeBenchmark
             }));
 
         }
+        private void FullSeqBenchmark(object ctobj)
+        {
+            chartFullSeq.Invoke(new Action(() =>
+            {
+                //chartFullSeq.Series[0].Points.Clear();
+            }));
+            CancellationToken token = (CancellationToken)ctobj;
 
+            progressBar1.Invoke(new Action(() =>
+            {
+                progressBar1.Style = ProgressBarStyle.Marquee;
+            }));
+
+            Random random = new Random();
+            byte[] buffer = new byte[1024 * 1024];
+            GenerateRandomArray(buffer);
+            string path = txtUDisk.Text + "test.bin";
+            long freeSpace = DiskOperation.GetHardDiskFreeSpace(txtUDisk.Text);
+            SafeFileHandle safeFileHandle = CreateFile(path, FileAccess.ReadWrite, FileShare.None, IntPtr.Zero, FileMode.OpenOrCreate, file_flags, IntPtr.Zero);
+
+            FileStream fileStream = new FileStream(safeFileHandle, FileAccess.ReadWrite, 4096, false);
+            fileStream.Position = 0;
+            fileStream.Write(buffer, 0, 4096);
+            Thread.Sleep(500);
+            //progressBar1.Invoke(new Action(() =>
+            //{
+            //    progressBar1.Style = ProgressBarStyle.Blocks;
+            //}));
+            List<double> testPoints = new List<double>();
+            Stopwatch temp_timer = new Stopwatch();
+            temp_timer.Start();
+            //long prenum = 0L;
+            long previousPos = 0L;
+            // int loopTimes = 30;
+
+            for (int num = 0; num < freeSpace / (1024 * 1024 * 1024); num++)
+            {
+                //Write 1GiB
+                double previousTime = temp_timer.Elapsed.TotalMilliseconds;
+                for (int p = 0; p < 1024; p++)
+                {
+                    if (token.IsCancellationRequested)
+                    {
+                        break;
+                    }
+                    fileStream.Position = previousPos + 1024 * 1024 * p;
+                    fileStream.Write(buffer, 0, 1024 * 1024);
+                    fileStream.Flush();
+                }
+                double curTime = temp_timer.Elapsed.TotalMilliseconds;
+                //Console.WriteLine(((curTime - previousTime) / 1000.0));
+                double curSpeed = (1024.0 / ((curTime - previousTime) / 1000.0));
+                Console.WriteLine(curSpeed);
+                chartFullSeq.Invoke(new Action(() =>
+                {
+                    chartFullSeq.Series[0].Points.AddY(curSpeed);
+                }));
+                previousPos = previousPos + 1024 * 1024 * 1024;
+
+                
+            }
+
+            fileStream.Close();
+            File.Delete(path);
+            temp_timer.Stop();
+            progressBar1.Invoke(new Action(() => { progressBar1.Style = ProgressBarStyle.Continuous;
+                progressBar1.Value = 100; }));
+
+
+
+        }
         private void FastBenchmark(object ctobj)
         {
             chart1.Invoke(new Action(() =>
@@ -526,7 +602,7 @@ namespace AccTimeBenchmark
             }));
             double adj4k = 0;
             double timeseq = WriteSeq(txtUDisk.Text + "test.bin", ctobj);
-            SetTxt(txtBenchSize, (dataLength / (1024 * 1024)).ToString());
+            //SetTxt(txtBenchSize, (dataLength / (1024 * 1024)).ToString());
             //dataLength
 
             SetTxt(txtSeqResult, timeseq.ToString("f4") + " MB/s");
@@ -621,6 +697,11 @@ namespace AccTimeBenchmark
         private void pictureBox2_Click(object sender, EventArgs e)
         {
             Process.Start("http://bbs.luobotou.org/forum-88-1.html");
+        }
+
+        private void chartFullSeq_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
