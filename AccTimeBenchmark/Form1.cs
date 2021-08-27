@@ -47,7 +47,7 @@ namespace AccTimeBenchmark
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            SWOnline swo = new SWOnline("https://bbs.luobotou.org/app/wtgbench.txt");
+            SWOnline swo = new SWOnline("https://bbs.luobotou.org/app/wtgbench.txt"); //
             Thread threadUpdate = new Thread(swo.Update);
             threadUpdate.Start();
             GetUdiskList.LoadUDList(comboBoxDisk);
