@@ -1,7 +1,7 @@
-﻿using Microsoft.Win32.SafeHandles;
+﻿using iTuner;
+using Microsoft.Win32.SafeHandles;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -10,7 +10,6 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Windows.Forms.DataVisualization.Charting;
 
 
 
@@ -18,6 +17,8 @@ namespace AccTimeBenchmark
 {
     public partial class Form1 : Form
     {
+        private static UsbDisk UdObj;
+        private static string diskRootPath;
         //private long dataLength = 1073737728L;
         private long dataLength = 536866816L;
         private int LoopTime4k = 30;
@@ -29,7 +30,6 @@ namespace AccTimeBenchmark
         private static extern SafeFileHandle CreateFile(string lpFileName, FileAccess dwDesiredAccess, FileShare dwShareMode, IntPtr lpSecurityAttributes, FileMode dwCreationDisposition, uint dwFlagsAndAttributes, IntPtr hTemplateFile);
 
         private readonly object threadCntLock = new object();
-        private int threadCnt;
         private DateTime start4kTime;
         private void GenerateRandomArray(byte[] rnd_array)
         {
@@ -50,12 +50,17 @@ namespace AccTimeBenchmark
             SWOnline swo = new SWOnline("https://bbs.luobotou.org/app/wtgbench.txt");
             Thread threadUpdate = new Thread(swo.Update);
             threadUpdate.Start();
-
+            GetUdiskList.LoadUDList(comboBoxDisk);
             Text += Application.ProductVersion;
             Graphics graphics = CreateGraphics();
             float dpiX = graphics.DpiX;
             Width = (int)(900 * (dpiX / 96.0));
             Height = (int)(650 * (dpiX / 96.0));
+
+            labelSysversion.Text = SysInfo.GetSysVersion(); ;
+            labelcpu.Text = SysInfo.GetCPUModel();
+            
+
 
 
 
@@ -162,6 +167,7 @@ namespace AccTimeBenchmark
             {
                 if (token.IsCancellationRequested)
                 {
+                    Console.WriteLine("Cancel Req");
                     break;
                 }
                 long num2 = random.Next((int)(dataLength / length + 1));
@@ -305,30 +311,14 @@ namespace AccTimeBenchmark
 
 
 
-        private void btnBrowser_Click(object sender, EventArgs e)
-        {
-            FolderBrowserDialog fbd = new FolderBrowserDialog();
-            fbd.ShowDialog();
-            if (fbd.SelectedPath.Length != 3)
-            {
-                if (fbd.SelectedPath.Length != 0)
-                {
-                    //MsgManager.getResString("Msg_UDRoot")
-                    //请选择优盘根目录
-                    MessageBox.Show("请选择移动磁盘根目录");
-                }
-                return;
-
-            }
-            txtUDisk.Text = fbd.SelectedPath;
-        }
+      
         private void SetTxt(TextBox tb, string text)
         {
             tb.Invoke(new Action(() => { tb.Text = text; }));
         }
         private void button1_Click(object sender, EventArgs e)
         {
-            if (txtUDisk.Text.Trim() == string.Empty)
+            if (UdObj == null)
             {
                 MessageBox.Show("请选择移动磁盘");
                 return;
@@ -352,7 +342,7 @@ namespace AccTimeBenchmark
                             FastBenchmark(cts.Token);
                         if (checkBoxThread.Checked)
                         {
-                            if (DiskOperation.GetHardDiskFreeSpace(txtUDisk.Text.Substring(0, 2) + "\\") < 20 * 1024 * 1024)
+                            if (DiskOperation.GetHardDiskFreeSpace(diskRootPath) < 20 * 1024 * 1024)
                             {
                                 MessageBox.Show("至少需要20GB可用空间进行测试！");
                                 return;
@@ -369,7 +359,7 @@ namespace AccTimeBenchmark
                         }
                         if (checkBoxScenario.Checked)
                         {
-                            if (DiskOperation.GetHardDiskFreeSpace(txtUDisk.Text.Substring(0, 2) + "\\") < 20 * 1024 * 1024)
+                            if (DiskOperation.GetHardDiskFreeSpace(diskRootPath) < 20 * 1024 * 1024)
                             {
                                 MessageBox.Show("至少需要20GB可用空间进行测试！");
                                 return;
@@ -415,7 +405,7 @@ namespace AccTimeBenchmark
         }
         private long ScenarioBenchmark(List<Scenario> scenarios, object ctobj)
         {
-            string path = txtUDisk.Text + "test.bin";
+            string path = diskRootPath + "test.bin";
             int length = 4096;
             int runTime = 5000;
             List<FileStream> fsList = new List<FileStream>();
@@ -481,7 +471,7 @@ namespace AccTimeBenchmark
             {
                 progressBar1.Style = ProgressBarStyle.Marquee;
             }));
-            string path = txtUDisk.Text + "test.bin";
+            string path = diskRootPath + "test.bin";
             int length = 4096;
             List<FileStream> fsList = new List<FileStream>();
             byte[] buffer = new byte[length];
@@ -502,7 +492,7 @@ namespace AccTimeBenchmark
             for (int i = 0; i <= 5; i++)
             {
 
-                double result = Write4K_MultiThread(txtUDisk.Text + "test.bin", 1 << i, fsList, ctobj);
+                double result = Write4K_MultiThread(diskRootPath + "test.bin", 1 << i, fsList, ctobj);
                 chartThreads.Invoke(new Action(() =>
                 {
                     chartThreads.Series[0].Points.AddXY(1 << i, result);
@@ -535,18 +525,19 @@ namespace AccTimeBenchmark
             {
                 progressBar1.Style = ProgressBarStyle.Marquee;
             }));
+            int ioLengthMB = 1;
 
             Random random = new Random();
-            byte[] buffer = new byte[1024 * 1024];
+            byte[] buffer = new byte[1024 * 1024* ioLengthMB];
             GenerateRandomArray(buffer);
-            string path = txtUDisk.Text + "test.bin";
-            long freeSpace = DiskOperation.GetHardDiskFreeSpace(txtUDisk.Text);
+            string path = diskRootPath + "test.bin";
+            long freeSpace = DiskOperation.GetHardDiskFreeSpace(diskRootPath);
             SafeFileHandle safeFileHandle = CreateFile(path, FileAccess.ReadWrite, FileShare.None, IntPtr.Zero, FileMode.OpenOrCreate, file_flags, IntPtr.Zero);
 
             FileStream fileStream = new FileStream(safeFileHandle, FileAccess.ReadWrite, 4096, false);
             fileStream.Position = 0;
             fileStream.Write(buffer, 0, 4096);
-            Thread.Sleep(500);
+            Thread.Sleep(3000);
             //progressBar1.Invoke(new Action(() =>
             //{
             //    progressBar1.Style = ProgressBarStyle.Blocks;
@@ -557,23 +548,23 @@ namespace AccTimeBenchmark
             //long prenum = 0L;
             long previousPos = 0L;
             // int loopTimes = 30;
-
+            
             for (int num = 0; num < freeSpace / (1024 * 1024 * 1024); num++)
             {
                 //Write 1GiB
                 double previousTime = temp_timer.Elapsed.TotalMilliseconds;
-                for (int p = 0; p < 1024; p++)
+                for (int p = 0; p < 1024 / ioLengthMB; p++)
                 {
                     if (token.IsCancellationRequested)
                     {
                         break;
                     }
                     fileStream.Position = previousPos + 1024 * 1024 * p;
-                    fileStream.Write(buffer, 0, 1024 * 1024);
+                    fileStream.Write(buffer, 0, 1024*1024* ioLengthMB);
                     fileStream.Flush();
                 }
                 double curTime = temp_timer.Elapsed.TotalMilliseconds;
-                //Console.WriteLine(((curTime - previousTime) / 1000.0));
+                Console.WriteLine(((curTime - previousTime) / 1000.0));
                 double curSpeed = (1024.0 / ((curTime - previousTime) / 1000.0));
                 Console.WriteLine(curSpeed);
                 chartFullSeq.Invoke(new Action(() =>
@@ -601,16 +592,16 @@ namespace AccTimeBenchmark
                 chart1.Series[0].Points.Clear();
             }));
             double adj4k = 0;
-            double timeseq = WriteSeq(txtUDisk.Text + "test.bin", ctobj);
+            double timeseq = WriteSeq(diskRootPath + "test.bin", ctobj);
             //SetTxt(txtBenchSize, (dataLength / (1024 * 1024)).ToString());
             //dataLength
 
             SetTxt(txtSeqResult, timeseq.ToString("f4") + " MB/s");
             //txtSeqResult.Invoke(new Action(() => { txtSeqResult.Text = timeseq.ToString() + "MB/S"; }));
-            double time4k = Write4k(txtUDisk.Text + "test.bin", ref adj4k, ctobj);
+            double time4k = Write4k(diskRootPath + "test.bin", ref adj4k, ctobj);
             txt4kResult.Invoke(new Action(() => { txt4kResult.Text = time4k.ToString("f4") + " MB/s"; }));
             txtA4kResult.Invoke(new Action(() => { txtA4kResult.Text = adj4k.ToString("f4") + " MB/s"; }));
-            File.Delete(txtUDisk.Text + "test.bin");
+            File.Delete(diskRootPath + "test.bin");
             //double timeAcc = write_access(txtUDisk.Text + "test.bin");
             //txtAccResult.Invoke(new Action(() => { txtAccResult.Text = timeAcc.ToString() + " ms"; }));
             //btnStart.Invoke(new Action(() => { btnStart.Text = "开始"; }));
@@ -703,5 +694,25 @@ namespace AccTimeBenchmark
         {
 
         }
+
+        private void comboBoxDisk_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            UdObj = (UsbDisk)comboBoxDisk.SelectedItem;
+            if(UdObj!=null)
+                diskRootPath = UdObj.Volume.Substring(0, 1) + ":\\";
+        }
+
+        private void comboBoxDisk_MouseHover(object sender, EventArgs e)
+        {
+            try
+            {
+                toolTip1.SetToolTip(this.comboBoxDisk, comboBoxDisk.SelectedItem.ToString()); ;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        }
+
     }
 }
