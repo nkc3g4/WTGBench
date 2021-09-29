@@ -115,6 +115,11 @@ namespace iTuner
             get;
             internal set;
         }
+        public string FileSystem
+        {
+            get;
+            internal set;
+        }
         public string VolumeName
         {
             get;
@@ -145,6 +150,9 @@ namespace iTuner
                 StringBuilder builder = new StringBuilder();
                 builder.Append(Volume);
                 builder.Append(" ");
+                builder.Append(" (");
+                builder.Append(FileSystem);
+                builder.Append(") ");
                 builder.Append(Model);
                 builder.Append(" ");
                 builder.Append(FormatByteCount(Size));

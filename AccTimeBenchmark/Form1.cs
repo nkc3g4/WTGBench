@@ -25,7 +25,7 @@ namespace AccTimeBenchmark
         //private long test4kCount = 8192 * 8192;
         private static uint FILE_FLAG_NO_BUFFERING = 536870912u;
         private static uint FILE_FLAG_WRITE_THROUGH = 2147483648u;
-        private static uint file_flags = FILE_FLAG_NO_BUFFERING | FILE_FLAG_WRITE_THROUGH;
+        private static uint file_flags = FILE_FLAG_NO_BUFFERING; //| FILE_FLAG_WRITE_THROUGH;
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         private static extern SafeFileHandle CreateFile(string lpFileName, FileAccess dwDesiredAccess, FileShare dwShareMode, IntPtr lpSecurityAttributes, FileMode dwCreationDisposition, uint dwFlagsAndAttributes, IntPtr hTemplateFile);
 
@@ -526,59 +526,70 @@ namespace AccTimeBenchmark
                 progressBar1.Style = ProgressBarStyle.Marquee;
             }));
             int ioLengthMB = 1;
+            int steplengthMB = 256;
 
             Random random = new Random();
             byte[] buffer = new byte[1024 * 1024* ioLengthMB];
             GenerateRandomArray(buffer);
             string path = diskRootPath + "test.bin";
+            if(File.Exists(path))
+                File.Delete(path);
             long freeSpace = DiskOperation.GetHardDiskFreeSpace(diskRootPath);
-            SafeFileHandle safeFileHandle = CreateFile(path, FileAccess.ReadWrite, FileShare.None, IntPtr.Zero, FileMode.OpenOrCreate, file_flags, IntPtr.Zero);
+            SafeFileHandle safeFileHandle = CreateFile(path, FileAccess.ReadWrite, FileShare.None, IntPtr.Zero, FileMode.CreateNew, file_flags, IntPtr.Zero);
 
-            FileStream fileStream = new FileStream(safeFileHandle, FileAccess.ReadWrite, 4096, false);
-            fileStream.Position = 0;
-            fileStream.Write(buffer, 0, 4096);
-            Thread.Sleep(3000);
+            FileStream fileStream = new FileStream(safeFileHandle, FileAccess.ReadWrite, steplengthMB * 1024 * ioLengthMB, false);
+            //fileStream.Position = 0;
+            //fileStream.Write(buffer, 0, steplengthMB * 1024 * ioLengthMB);
+            //fileStream.Flush();
             //progressBar1.Invoke(new Action(() =>
             //{
             //    progressBar1.Style = ProgressBarStyle.Blocks;
             //}));
             List<double> testPoints = new List<double>();
-            Stopwatch temp_timer = new Stopwatch();
-            temp_timer.Start();
+            Stopwatch speedTimer = new Stopwatch();
+            //Console.WriteLine(Stopwatch.IsHighResolution);
+            speedTimer.Start();
+            Thread.Sleep(3000);
             //long prenum = 0L;
             long previousPos = 0L;
             // int loopTimes = 30;
             
-            for (int num = 0; num < freeSpace / (1024 * 1024 * 1024); num++)
+            for (int num = 0; num < freeSpace / (steplengthMB * 1024 * 1024); num++)
             {
-                //Write 1GiB
-                double previousTime = temp_timer.Elapsed.TotalMilliseconds;
-                for (int p = 0; p < 1024 / ioLengthMB; p++)
+                if (token.IsCancellationRequested)
                 {
-                    if (token.IsCancellationRequested)
-                    {
-                        break;
-                    }
+                    break;
+                }
+                //Write steplengthMB
+                
+                double previousTime = speedTimer.Elapsed.TotalMilliseconds;
+                for (int p = 0; p < steplengthMB / ioLengthMB; p++)
+                {
                     fileStream.Position = previousPos + 1024 * 1024 * p;
-                    fileStream.Write(buffer, 0, 1024*1024* ioLengthMB);
+                    fileStream.Write(buffer, 0, 1024 * 1024* ioLengthMB);
                     fileStream.Flush();
                 }
-                double curTime = temp_timer.Elapsed.TotalMilliseconds;
-                Console.WriteLine(((curTime - previousTime) / 1000.0));
-                double curSpeed = (1024.0 / ((curTime - previousTime) / 1000.0));
+                
+                double curTime = speedTimer.Elapsed.TotalMilliseconds;
+                //Console.WriteLine((curTime - previousTime) / 1000.0);
+                double curSpeed = (float)steplengthMB / ((curTime - previousTime) / 1000.0);
+                previousPos = previousPos + steplengthMB * 1024 * 1024;
+                GenerateRandomArray(buffer);
                 Console.WriteLine(curSpeed);
+                if (num == 0)
+                    continue;
                 chartFullSeq.Invoke(new Action(() =>
                 {
-                    chartFullSeq.Series[0].Points.AddY(curSpeed);
+                    //chartFullSeq.Series[0].Points.AddY(curSpeed);
+                    chartFullSeq.Series[0].Points.AddXY((num-1)/4.0, curSpeed);
                 }));
-                previousPos = previousPos + 1024 * 1024 * 1024;
-
                 
+
             }
 
             fileStream.Close();
             File.Delete(path);
-            temp_timer.Stop();
+            speedTimer.Stop();
             progressBar1.Invoke(new Action(() => { progressBar1.Style = ProgressBarStyle.Continuous;
                 progressBar1.Value = 100; }));
 

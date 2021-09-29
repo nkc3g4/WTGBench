@@ -29,21 +29,17 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea9 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series9 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Title title9 = new System.Windows.Forms.DataVisualization.Charting.Title();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea10 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series10 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint5 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(1D, 0D);
-            System.Windows.Forms.DataVisualization.Charting.Title title10 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Title title4 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea5 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint2 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(1D, 0D);
+            System.Windows.Forms.DataVisualization.Charting.Title title5 = new System.Windows.Forms.DataVisualization.Charting.Title();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea11 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series11 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Title title11 = new System.Windows.Forms.DataVisualization.Charting.Title();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea12 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series12 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint6 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(3D, 1230D);
-            System.Windows.Forms.DataVisualization.Charting.Title title12 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea6 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Title title6 = new System.Windows.Forms.DataVisualization.Charting.Title();
             this.comboBoxDisk = new System.Windows.Forms.ComboBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.checkBoxFast = new System.Windows.Forms.CheckBox();
@@ -67,7 +63,6 @@
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.chartFullSeq = new System.Windows.Forms.DataVisualization.Charting.Chart();
-            this.chart2 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.labelSysversion = new System.Windows.Forms.Label();
@@ -79,7 +74,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chartFullSeq)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.chart2)).BeginInit();
             this.SuspendLayout();
             // 
             // comboBoxDisk
@@ -127,6 +121,8 @@
             // checkBoxFullSeq
             // 
             this.checkBoxFullSeq.AutoSize = true;
+            this.checkBoxFullSeq.Checked = true;
+            this.checkBoxFullSeq.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxFullSeq.Location = new System.Drawing.Point(42, 84);
             this.checkBoxFullSeq.Margin = new System.Windows.Forms.Padding(5);
             this.checkBoxFullSeq.Name = "checkBoxFullSeq";
@@ -283,7 +279,7 @@
             // 
             // txt4kResult
             // 
-            this.txt4kResult.Location = new System.Drawing.Point(264, 717);
+            this.txt4kResult.Location = new System.Drawing.Point(112, 784);
             this.txt4kResult.Margin = new System.Windows.Forms.Padding(6);
             this.txt4kResult.Name = "txt4kResult";
             this.txt4kResult.ReadOnly = true;
@@ -293,55 +289,55 @@
             // 
             // chart1
             // 
-            chartArea9.AxisX.Interval = 5D;
-            chartArea9.AxisX.Maximum = 15D;
-            chartArea9.AxisX.Minimum = 0D;
-            chartArea9.AxisX.Title = "时间(s)";
-            chartArea9.AxisY.Title = "MB/s";
-            chartArea9.Name = "ChartArea1";
-            this.chart1.ChartAreas.Add(chartArea9);
+            chartArea4.AxisX.Interval = 5D;
+            chartArea4.AxisX.Maximum = 15D;
+            chartArea4.AxisX.Minimum = 0D;
+            chartArea4.AxisX.Title = "时间(s)";
+            chartArea4.AxisY.Title = "MB/s";
+            chartArea4.Name = "ChartArea1";
+            this.chart1.ChartAreas.Add(chartArea4);
             this.chart1.Location = new System.Drawing.Point(714, 48);
             this.chart1.Name = "chart1";
-            series9.ChartArea = "ChartArea1";
-            series9.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series9.IsVisibleInLegend = false;
-            series9.Legend = "Legend1";
-            series9.Name = "Series1";
-            this.chart1.Series.Add(series9);
+            series4.ChartArea = "ChartArea1";
+            series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series4.IsVisibleInLegend = false;
+            series4.Legend = "Legend1";
+            series4.Name = "Series1";
+            this.chart1.Series.Add(series4);
             this.chart1.Size = new System.Drawing.Size(483, 662);
             this.chart1.TabIndex = 12;
             this.chart1.Text = "chart1";
-            title9.Name = "Title1";
-            title9.Text = "4K随机写入速度";
-            this.chart1.Titles.Add(title9);
+            title4.Name = "Title1";
+            title4.Text = "4K随机写入速度";
+            this.chart1.Titles.Add(title4);
             // 
             // chartThreads
             // 
-            chartArea10.AxisX.Interval = 1D;
-            chartArea10.AxisX.IsLogarithmic = true;
-            chartArea10.AxisX.LogarithmBase = 2D;
-            chartArea10.AxisX.Maximum = 32D;
-            chartArea10.AxisX.Minimum = 1D;
-            chartArea10.AxisX.Title = "Threads";
-            chartArea10.AxisY.Title = "MB/s";
-            chartArea10.Name = "ChartArea1";
-            this.chartThreads.ChartAreas.Add(chartArea10);
+            chartArea5.AxisX.Interval = 1D;
+            chartArea5.AxisX.IsLogarithmic = true;
+            chartArea5.AxisX.LogarithmBase = 2D;
+            chartArea5.AxisX.Maximum = 32D;
+            chartArea5.AxisX.Minimum = 1D;
+            chartArea5.AxisX.Title = "Threads";
+            chartArea5.AxisY.Title = "MB/s";
+            chartArea5.Name = "ChartArea1";
+            this.chartThreads.ChartAreas.Add(chartArea5);
             this.chartThreads.Location = new System.Drawing.Point(1245, 48);
             this.chartThreads.Name = "chartThreads";
-            series10.ChartArea = "ChartArea1";
-            series10.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series10.IsVisibleInLegend = false;
-            series10.Legend = "Legend1";
-            series10.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Square;
-            series10.Name = "Series1";
-            series10.Points.Add(dataPoint5);
-            this.chartThreads.Series.Add(series10);
+            series5.ChartArea = "ChartArea1";
+            series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series5.IsVisibleInLegend = false;
+            series5.Legend = "Legend1";
+            series5.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Square;
+            series5.Name = "Series1";
+            series5.Points.Add(dataPoint2);
+            this.chartThreads.Series.Add(series5);
             this.chartThreads.Size = new System.Drawing.Size(483, 662);
             this.chartThreads.TabIndex = 13;
             this.chartThreads.Text = "chart2";
-            title10.Name = "Title1";
-            title10.Text = "4K随机写入速度-线程数";
-            this.chartThreads.Titles.Add(title10);
+            title5.Name = "Title1";
+            title5.Text = "4K随机写入速度-线程数";
+            this.chartThreads.Titles.Add(title5);
             // 
             // pictureBox1
             // 
@@ -375,67 +371,45 @@
             // 
             // chartFullSeq
             // 
-            chartArea11.AxisX.Minimum = 0D;
-            chartArea11.AxisX.Title = "写入量(GB)";
-            chartArea11.AxisY.Minimum = 0D;
-            chartArea11.AxisY.Title = "MB/s";
-            chartArea11.Name = "ChartArea1";
-            this.chartFullSeq.ChartAreas.Add(chartArea11);
-            this.chartFullSeq.Location = new System.Drawing.Point(42, 766);
+            chartArea6.AxisX.Minimum = 0D;
+            chartArea6.AxisX.MinorGrid.Enabled = true;
+            chartArea6.AxisX.MinorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dot;
+            chartArea6.AxisX.ScaleBreakStyle.CollapsibleSpaceThreshold = 10;
+            chartArea6.AxisX.Title = "写入量(GB)";
+            chartArea6.AxisY.Minimum = 0D;
+            chartArea6.AxisY.MinorGrid.Enabled = true;
+            chartArea6.AxisY.MinorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dot;
+            chartArea6.AxisY.ScaleBreakStyle.CollapsibleSpaceThreshold = 10;
+            chartArea6.AxisY.Title = "MB/s";
+            chartArea6.Name = "ChartArea1";
+            chartArea6.Position.Auto = false;
+            chartArea6.Position.Height = 85.65887F;
+            chartArea6.Position.Width = 98F;
+            chartArea6.Position.Y = 11.34114F;
+            this.chartFullSeq.ChartAreas.Add(chartArea6);
+            this.chartFullSeq.Location = new System.Drawing.Point(42, 719);
             this.chartFullSeq.Name = "chartFullSeq";
-            series11.ChartArea = "ChartArea1";
-            series11.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series11.IsVisibleInLegend = false;
-            series11.Legend = "Legend1";
-            series11.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Square;
-            series11.Name = "Series1";
-            series11.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
-            this.chartFullSeq.Series.Add(series11);
-            this.chartFullSeq.Size = new System.Drawing.Size(1686, 410);
+            series6.ChartArea = "ChartArea1";
+            series6.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series6.IsVisibleInLegend = false;
+            series6.Legend = "Legend1";
+            series6.MarkerStep = 4;
+            series6.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Diamond;
+            series6.Name = "Series1";
+            series6.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
+            this.chartFullSeq.Series.Add(series6);
+            this.chartFullSeq.Size = new System.Drawing.Size(1686, 488);
             this.chartFullSeq.TabIndex = 52;
             this.chartFullSeq.Text = "chart2";
-            title11.Name = "Title1";
-            title11.Text = "全盘连续写入";
-            this.chartFullSeq.Titles.Add(title11);
+            title6.Name = "Title1";
+            title6.Text = "全盘连续写入";
+            this.chartFullSeq.Titles.Add(title6);
             this.chartFullSeq.Click += new System.EventHandler(this.chartFullSeq_Click);
-            // 
-            // chart2
-            // 
-            chartArea12.AxisX.Interval = 1D;
-            chartArea12.AxisX.LogarithmBase = 2D;
-            chartArea12.AxisX.Maximum = 10D;
-            chartArea12.AxisX.Minimum = 1D;
-            chartArea12.AxisX.Title = "Threads";
-            chartArea12.AxisY.Title = "MB/s";
-            chartArea12.Name = "ChartArea1";
-            this.chart2.ChartAreas.Add(chartArea12);
-            this.chart2.Location = new System.Drawing.Point(21, 766);
-            this.chart2.Name = "chart2";
-            series12.ChartArea = "ChartArea1";
-            series12.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Bar;
-            series12.IsVisibleInLegend = false;
-            series12.Legend = "Legend1";
-            series12.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Square;
-            series12.Name = "Series1";
-            dataPoint6.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataPoint6.IsValueShownAsLabel = false;
-            dataPoint6.Label = "CHIPFANCIER Pro 256GB";
-            dataPoint6.LabelForeColor = System.Drawing.Color.White;
-            series12.Points.Add(dataPoint6);
-            series12.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.String;
-            this.chart2.Series.Add(series12);
-            this.chart2.Size = new System.Drawing.Size(646, 418);
-            this.chart2.TabIndex = 53;
-            this.chart2.Text = "chart2";
-            title12.Name = "Title1";
-            title12.Text = "4K随机写入速度-线程数";
-            this.chart2.Titles.Add(title12);
-            this.chart2.Visible = false;
             // 
             // linkLabel1
             // 
             this.linkLabel1.AutoSize = true;
-            this.linkLabel1.Location = new System.Drawing.Point(42, 1183);
+            this.linkLabel1.Location = new System.Drawing.Point(59, 1177);
             this.linkLabel1.Name = "linkLabel1";
             this.linkLabel1.Size = new System.Drawing.Size(119, 30);
             this.linkLabel1.TabIndex = 54;
@@ -471,7 +445,6 @@
             this.Controls.Add(this.labelSysversion);
             this.Controls.Add(this.linkLabel1);
             this.Controls.Add(this.chartFullSeq);
-            this.Controls.Add(this.chart2);
             this.Controls.Add(this.pictureBox2);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.chartThreads);
@@ -496,7 +469,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.chartFullSeq)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.chart2)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -525,7 +497,6 @@
         private System.Windows.Forms.DataVisualization.Charting.Chart chartFullSeq;
         private System.Windows.Forms.Label labelSceRes;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.DataVisualization.Charting.Chart chart2;
         private System.Windows.Forms.ComboBox comboBoxDisk;
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.LinkLabel linkLabel1;

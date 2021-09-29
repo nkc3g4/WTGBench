@@ -280,13 +280,14 @@ namespace iTuner
                                 {
                                     // finally find the logical disk entry to determine the volume name
                                     ManagementObject volume = new ManagementObjectSearcher(string.Format(
-                                        "select FreeSpace, Size, VolumeName, DriveType from Win32_LogicalDisk where Name='{0}'",
+                                        "select FreeSpace, Size, VolumeName, DriveType, FileSystem from Win32_LogicalDisk where Name='{0}'",
                                         logical["Name"])).First();
 
                                     UsbDisk diskVolume = new UsbDisk(drive["DeviceID"].ToString());
                                     diskVolume.Model = drive["Model"].ToString();
                                     diskVolume.Index = drive["Index"].ToString();
                                     diskVolume.Volume = logical["Name"].ToString();
+                                    diskVolume.FileSystem = volume["FileSystem"].ToString();
                                     diskVolume.DiskSize = (ulong)drive["Size"];
                                     diskVolume.DriveType = drive["MediaType"].ToString();
                                     diskVolume.Size = (ulong)volume["Size"];
