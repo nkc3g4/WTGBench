@@ -7,6 +7,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -47,6 +48,7 @@ namespace AccTimeBenchmark
 
         private void Form1_Load(object sender, EventArgs e)
         {
+
             SWOnline swo = new SWOnline("https://bbs.luobotou.org/app/wtgbench.txt"); //
             Thread threadUpdate = new Thread(swo.Update);
             threadUpdate.Start();
@@ -488,6 +490,8 @@ namespace AccTimeBenchmark
 
                 fsList.Add(fileStream);
             }
+            StringBuilder csvBuilder = new StringBuilder();
+
 
             for (int i = 0; i <= 5; i++)
             {
@@ -498,6 +502,11 @@ namespace AccTimeBenchmark
                     chartThreads.Series[0].Points.AddXY(1 << i, result);
                     chartThreads.ChartAreas[0].AxisX.IsLogarithmic = true;
                 }));
+                csvBuilder.Append(1 << i);
+                csvBuilder.Append(",");
+                csvBuilder.Append(result);
+                csvBuilder.AppendLine(",");
+
                 if (i < 5)
                     Thread.Sleep(20000);
             }
@@ -511,6 +520,7 @@ namespace AccTimeBenchmark
                 progressBar1.Style = ProgressBarStyle.Continuous;
                 progressBar1.Value = 100;
             }));
+            File.WriteAllText("Multi4k_" + DateTime.Now.ToString("yyyy-MM-ddTHH-mm-ss") + ".csv", csvBuilder.ToString());
 
         }
         private void FullSeqBenchmark(object ctobj)
@@ -553,6 +563,7 @@ namespace AccTimeBenchmark
             //long prenum = 0L;
             long previousPos = 0L;
             // int loopTimes = 30;
+            StringBuilder csvBuilder = new StringBuilder();
             
             for (int num = 0; num < freeSpace / (steplengthMB * 1024 * 1024); num++)
             {
@@ -582,14 +593,19 @@ namespace AccTimeBenchmark
                 {
                     //chartFullSeq.Series[0].Points.AddY(curSpeed);
                     chartFullSeq.Series[0].Points.AddXY((num-1)/4.0, curSpeed);
-                }));
-                
 
+                }));
+
+                csvBuilder.Append(((num - 1) / 4.0).ToString());
+                csvBuilder.Append(",");
+                csvBuilder.Append(curSpeed);
+                csvBuilder.AppendLine(",");
             }
 
             fileStream.Close();
             File.Delete(path);
             speedTimer.Stop();
+            File.WriteAllText("FullSeq_"+DateTime.Now.ToString("yyyy-MM-ddTHH-mm-ss") +".csv",csvBuilder.ToString());
             progressBar1.Invoke(new Action(() => { progressBar1.Style = ProgressBarStyle.Continuous;
                 progressBar1.Value = 100; }));
 
