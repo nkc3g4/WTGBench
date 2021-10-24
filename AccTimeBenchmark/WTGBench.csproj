@@ -108,6 +108,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\orange.png" />
+    <None Include="Resources\grey.png" />
     <Content Include="speed_128px_1151078_easyicon.net.ico" />
   </ItemGroup>
   <ItemGroup>

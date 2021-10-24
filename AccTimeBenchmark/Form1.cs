@@ -659,37 +659,70 @@ namespace AccTimeBenchmark
 
             string ln = "Error";
             Color lc = Color.Yellow;
-
+            Image L1 = Properties.Resources.grey;
+            Image L2 = Properties.Resources.grey;
+            Image L3 = Properties.Resources.grey;
+            Image L4 = Properties.Resources.grey;
             if (lv == 1)
             {
                 ln = "Steel";
                 lc = Color.SteelBlue;
+                
             }
             else if (lv == 2)
             {
                 ln = "Bronze";
                 lc = Color.Crimson;
+                L1 = Properties.Resources.orange;
             }
             else if (lv == 3)
             {
                 ln = "Silver";
                 lc = Color.Silver;
+                L1 = Properties.Resources.orange;
+                L2 = Properties.Resources.orange;
             }
             else if (lv == 4)
             {
                 ln = "Gold";
                 lc = Color.Gold;
+                L1 = Properties.Resources.orange;
+                L2 = Properties.Resources.orange;
+                L3 = Properties.Resources.orange;
             }
             else if (lv == 5)
             {
                 ln = "Platinum";
                 lc = Color.White;
+                L1 = Properties.Resources.orange;
+                L2 = Properties.Resources.orange;
+                L3 = Properties.Resources.orange;
+                L4 = Properties.Resources.orange;
             }
             labelLevel.Invoke(new Action(() =>
             {
                 labelLevel.Text = ln;
                 labelLevel.ForeColor = lc;
+                labelLevel.Visible = true;
             }));
+
+            pictureBoxL1.Invoke(new Action(() => {
+                pictureBoxL1.Image = L1;
+                pictureBoxL1.Visible = true;
+            }));
+            pictureBoxL2.Invoke(new Action(() => {
+                pictureBoxL2.Image = L2;
+                pictureBoxL2.Visible = true;
+            }));
+            pictureBoxL3.Invoke(new Action(() => {
+                pictureBoxL3.Image = L3;
+                pictureBoxL3.Visible = true;
+            }));
+            pictureBoxL4.Invoke(new Action(() => {
+                pictureBoxL4.Image = L4;
+                pictureBoxL4.Visible = true;
+            }));
+
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)

@@ -29,17 +29,17 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Title title4 = new System.Windows.Forms.DataVisualization.Charting.Title();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea5 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint2 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(1D, 0D);
-            System.Windows.Forms.DataVisualization.Charting.Title title5 = new System.Windows.Forms.DataVisualization.Charting.Title();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea6 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Title title6 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Title title1 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint1 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(1D, 0D);
+            System.Windows.Forms.DataVisualization.Charting.Title title2 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Title title3 = new System.Windows.Forms.DataVisualization.Charting.Title();
             this.comboBoxDisk = new System.Windows.Forms.ComboBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.checkBoxFast = new System.Windows.Forms.CheckBox();
@@ -47,6 +47,10 @@
             this.checkBoxThread = new System.Windows.Forms.CheckBox();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.pictureBoxL1 = new System.Windows.Forms.PictureBox();
+            this.pictureBoxL2 = new System.Windows.Forms.PictureBox();
+            this.pictureBoxL3 = new System.Windows.Forms.PictureBox();
+            this.pictureBoxL4 = new System.Windows.Forms.PictureBox();
             this.label1 = new System.Windows.Forms.Label();
             this.labelSceRes = new System.Windows.Forms.Label();
             this.labelLevel = new System.Windows.Forms.Label();
@@ -69,6 +73,10 @@
             this.labelcpu = new System.Windows.Forms.Label();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxL1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxL2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxL3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxL4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chartThreads)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -154,6 +162,10 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.pictureBoxL1);
+            this.groupBox3.Controls.Add(this.pictureBoxL2);
+            this.groupBox3.Controls.Add(this.pictureBoxL3);
+            this.groupBox3.Controls.Add(this.pictureBoxL4);
             this.groupBox3.Controls.Add(this.label1);
             this.groupBox3.Controls.Add(this.labelSceRes);
             this.groupBox3.Controls.Add(this.labelLevel);
@@ -171,6 +183,50 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "测试结果";
             // 
+            // pictureBoxL1
+            // 
+            this.pictureBoxL1.Image = global::AccTimeBenchmark.Properties.Resources.orange;
+            this.pictureBoxL1.Location = new System.Drawing.Point(407, 167);
+            this.pictureBoxL1.Name = "pictureBoxL1";
+            this.pictureBoxL1.Size = new System.Drawing.Size(42, 50);
+            this.pictureBoxL1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBoxL1.TabIndex = 15;
+            this.pictureBoxL1.TabStop = false;
+            this.pictureBoxL1.Visible = false;
+            // 
+            // pictureBoxL2
+            // 
+            this.pictureBoxL2.Image = global::AccTimeBenchmark.Properties.Resources.grey;
+            this.pictureBoxL2.Location = new System.Drawing.Point(455, 167);
+            this.pictureBoxL2.Name = "pictureBoxL2";
+            this.pictureBoxL2.Size = new System.Drawing.Size(42, 50);
+            this.pictureBoxL2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBoxL2.TabIndex = 14;
+            this.pictureBoxL2.TabStop = false;
+            this.pictureBoxL2.Visible = false;
+            // 
+            // pictureBoxL3
+            // 
+            this.pictureBoxL3.Image = ((System.Drawing.Image)(resources.GetObject("pictureBoxL3.Image")));
+            this.pictureBoxL3.Location = new System.Drawing.Point(503, 167);
+            this.pictureBoxL3.Name = "pictureBoxL3";
+            this.pictureBoxL3.Size = new System.Drawing.Size(42, 50);
+            this.pictureBoxL3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBoxL3.TabIndex = 13;
+            this.pictureBoxL3.TabStop = false;
+            this.pictureBoxL3.Visible = false;
+            // 
+            // pictureBoxL4
+            // 
+            this.pictureBoxL4.Image = ((System.Drawing.Image)(resources.GetObject("pictureBoxL4.Image")));
+            this.pictureBoxL4.Location = new System.Drawing.Point(551, 167);
+            this.pictureBoxL4.Name = "pictureBoxL4";
+            this.pictureBoxL4.Size = new System.Drawing.Size(42, 50);
+            this.pictureBoxL4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBoxL4.TabIndex = 12;
+            this.pictureBoxL4.TabStop = false;
+            this.pictureBoxL4.Visible = false;
+            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -185,7 +241,7 @@
             // 
             this.labelSceRes.AutoSize = true;
             this.labelSceRes.Font = new System.Drawing.Font("Microsoft YaHei", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.labelSceRes.Location = new System.Drawing.Point(205, 237);
+            this.labelSceRes.Location = new System.Drawing.Point(204, 234);
             this.labelSceRes.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.labelSceRes.Name = "labelSceRes";
             this.labelSceRes.Size = new System.Drawing.Size(24, 31);
@@ -199,10 +255,12 @@
             this.labelLevel.Cursor = System.Windows.Forms.Cursors.Hand;
             this.labelLevel.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelLevel.ForeColor = System.Drawing.SystemColors.ActiveBorder;
-            this.labelLevel.Location = new System.Drawing.Point(213, 166);
+            this.labelLevel.Location = new System.Drawing.Point(202, 166);
             this.labelLevel.Name = "labelLevel";
-            this.labelLevel.Size = new System.Drawing.Size(0, 51);
+            this.labelLevel.Size = new System.Drawing.Size(199, 51);
             this.labelLevel.TabIndex = 9;
+            this.labelLevel.Text = "Platinum";
+            this.labelLevel.Visible = false;
             this.labelLevel.Click += new System.EventHandler(this.labelLevel_Click);
             // 
             // label7
@@ -217,11 +275,11 @@
             // 
             // txtSeqResult
             // 
-            this.txtSeqResult.Location = new System.Drawing.Point(211, 48);
+            this.txtSeqResult.Location = new System.Drawing.Point(198, 48);
             this.txtSeqResult.Margin = new System.Windows.Forms.Padding(6);
             this.txtSeqResult.Name = "txtSeqResult";
             this.txtSeqResult.ReadOnly = true;
-            this.txtSeqResult.Size = new System.Drawing.Size(382, 36);
+            this.txtSeqResult.Size = new System.Drawing.Size(395, 36);
             this.txtSeqResult.TabIndex = 7;
             // 
             // label6
@@ -236,11 +294,11 @@
             // 
             // txtA4kResult
             // 
-            this.txtA4kResult.Location = new System.Drawing.Point(211, 101);
+            this.txtA4kResult.Location = new System.Drawing.Point(198, 101);
             this.txtA4kResult.Margin = new System.Windows.Forms.Padding(6);
             this.txtA4kResult.Name = "txtA4kResult";
             this.txtA4kResult.ReadOnly = true;
-            this.txtA4kResult.Size = new System.Drawing.Size(382, 36);
+            this.txtA4kResult.Size = new System.Drawing.Size(395, 36);
             this.txtA4kResult.TabIndex = 5;
             // 
             // label5
@@ -289,55 +347,55 @@
             // 
             // chart1
             // 
-            chartArea4.AxisX.Interval = 5D;
-            chartArea4.AxisX.Maximum = 15D;
-            chartArea4.AxisX.Minimum = 0D;
-            chartArea4.AxisX.Title = "时间(s)";
-            chartArea4.AxisY.Title = "MB/s";
-            chartArea4.Name = "ChartArea1";
-            this.chart1.ChartAreas.Add(chartArea4);
+            chartArea1.AxisX.Interval = 5D;
+            chartArea1.AxisX.Maximum = 15D;
+            chartArea1.AxisX.Minimum = 0D;
+            chartArea1.AxisX.Title = "时间(s)";
+            chartArea1.AxisY.Title = "MB/s";
+            chartArea1.Name = "ChartArea1";
+            this.chart1.ChartAreas.Add(chartArea1);
             this.chart1.Location = new System.Drawing.Point(714, 48);
             this.chart1.Name = "chart1";
-            series4.ChartArea = "ChartArea1";
-            series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series4.IsVisibleInLegend = false;
-            series4.Legend = "Legend1";
-            series4.Name = "Series1";
-            this.chart1.Series.Add(series4);
+            series1.ChartArea = "ChartArea1";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series1.IsVisibleInLegend = false;
+            series1.Legend = "Legend1";
+            series1.Name = "Series1";
+            this.chart1.Series.Add(series1);
             this.chart1.Size = new System.Drawing.Size(483, 662);
             this.chart1.TabIndex = 12;
             this.chart1.Text = "chart1";
-            title4.Name = "Title1";
-            title4.Text = "4K随机写入速度";
-            this.chart1.Titles.Add(title4);
+            title1.Name = "Title1";
+            title1.Text = "4K随机写入速度";
+            this.chart1.Titles.Add(title1);
             // 
             // chartThreads
             // 
-            chartArea5.AxisX.Interval = 1D;
-            chartArea5.AxisX.IsLogarithmic = true;
-            chartArea5.AxisX.LogarithmBase = 2D;
-            chartArea5.AxisX.Maximum = 32D;
-            chartArea5.AxisX.Minimum = 1D;
-            chartArea5.AxisX.Title = "Threads";
-            chartArea5.AxisY.Title = "MB/s";
-            chartArea5.Name = "ChartArea1";
-            this.chartThreads.ChartAreas.Add(chartArea5);
+            chartArea2.AxisX.Interval = 1D;
+            chartArea2.AxisX.IsLogarithmic = true;
+            chartArea2.AxisX.LogarithmBase = 2D;
+            chartArea2.AxisX.Maximum = 32D;
+            chartArea2.AxisX.Minimum = 1D;
+            chartArea2.AxisX.Title = "Threads";
+            chartArea2.AxisY.Title = "MB/s";
+            chartArea2.Name = "ChartArea1";
+            this.chartThreads.ChartAreas.Add(chartArea2);
             this.chartThreads.Location = new System.Drawing.Point(1245, 48);
             this.chartThreads.Name = "chartThreads";
-            series5.ChartArea = "ChartArea1";
-            series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series5.IsVisibleInLegend = false;
-            series5.Legend = "Legend1";
-            series5.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Square;
-            series5.Name = "Series1";
-            series5.Points.Add(dataPoint2);
-            this.chartThreads.Series.Add(series5);
+            series2.ChartArea = "ChartArea1";
+            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series2.IsVisibleInLegend = false;
+            series2.Legend = "Legend1";
+            series2.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Square;
+            series2.Name = "Series1";
+            series2.Points.Add(dataPoint1);
+            this.chartThreads.Series.Add(series2);
             this.chartThreads.Size = new System.Drawing.Size(483, 662);
             this.chartThreads.TabIndex = 13;
             this.chartThreads.Text = "chart2";
-            title5.Name = "Title1";
-            title5.Text = "4K随机写入速度-线程数";
-            this.chartThreads.Titles.Add(title5);
+            title2.Name = "Title1";
+            title2.Text = "4K随机写入速度-线程数";
+            this.chartThreads.Titles.Add(title2);
             // 
             // pictureBox1
             // 
@@ -371,39 +429,39 @@
             // 
             // chartFullSeq
             // 
-            chartArea6.AxisX.Minimum = 0D;
-            chartArea6.AxisX.MinorGrid.Enabled = true;
-            chartArea6.AxisX.MinorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dot;
-            chartArea6.AxisX.ScaleBreakStyle.CollapsibleSpaceThreshold = 10;
-            chartArea6.AxisX.Title = "写入量(GB)";
-            chartArea6.AxisY.Minimum = 0D;
-            chartArea6.AxisY.MinorGrid.Enabled = true;
-            chartArea6.AxisY.MinorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dot;
-            chartArea6.AxisY.ScaleBreakStyle.CollapsibleSpaceThreshold = 10;
-            chartArea6.AxisY.Title = "MB/s";
-            chartArea6.Name = "ChartArea1";
-            chartArea6.Position.Auto = false;
-            chartArea6.Position.Height = 85.65887F;
-            chartArea6.Position.Width = 98F;
-            chartArea6.Position.Y = 11.34114F;
-            this.chartFullSeq.ChartAreas.Add(chartArea6);
+            chartArea3.AxisX.Minimum = 0D;
+            chartArea3.AxisX.MinorGrid.Enabled = true;
+            chartArea3.AxisX.MinorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dot;
+            chartArea3.AxisX.ScaleBreakStyle.CollapsibleSpaceThreshold = 10;
+            chartArea3.AxisX.Title = "写入量(GB)";
+            chartArea3.AxisY.Minimum = 0D;
+            chartArea3.AxisY.MinorGrid.Enabled = true;
+            chartArea3.AxisY.MinorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dot;
+            chartArea3.AxisY.ScaleBreakStyle.CollapsibleSpaceThreshold = 10;
+            chartArea3.AxisY.Title = "MB/s";
+            chartArea3.Name = "ChartArea1";
+            chartArea3.Position.Auto = false;
+            chartArea3.Position.Height = 85.65887F;
+            chartArea3.Position.Width = 98F;
+            chartArea3.Position.Y = 11.34114F;
+            this.chartFullSeq.ChartAreas.Add(chartArea3);
             this.chartFullSeq.Location = new System.Drawing.Point(42, 719);
             this.chartFullSeq.Name = "chartFullSeq";
-            series6.ChartArea = "ChartArea1";
-            series6.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series6.IsVisibleInLegend = false;
-            series6.Legend = "Legend1";
-            series6.MarkerStep = 4;
-            series6.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Diamond;
-            series6.Name = "Series1";
-            series6.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
-            this.chartFullSeq.Series.Add(series6);
+            series3.ChartArea = "ChartArea1";
+            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series3.IsVisibleInLegend = false;
+            series3.Legend = "Legend1";
+            series3.MarkerStep = 4;
+            series3.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Diamond;
+            series3.Name = "Series1";
+            series3.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
+            this.chartFullSeq.Series.Add(series3);
             this.chartFullSeq.Size = new System.Drawing.Size(1686, 488);
             this.chartFullSeq.TabIndex = 52;
             this.chartFullSeq.Text = "chart2";
-            title6.Name = "Title1";
-            title6.Text = "全盘连续写入";
-            this.chartFullSeq.Titles.Add(title6);
+            title3.Name = "Title1";
+            title3.Text = "全盘连续写入";
+            this.chartFullSeq.Titles.Add(title3);
             this.chartFullSeq.Click += new System.EventHandler(this.chartFullSeq_Click);
             // 
             // linkLabel1
@@ -464,6 +522,10 @@
             this.groupBox2.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxL1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxL2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxL3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxL4)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.chartThreads)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
@@ -502,6 +564,10 @@
         private System.Windows.Forms.LinkLabel linkLabel1;
         private System.Windows.Forms.Label labelSysversion;
         private System.Windows.Forms.Label labelcpu;
+        private System.Windows.Forms.PictureBox pictureBoxL1;
+        private System.Windows.Forms.PictureBox pictureBoxL2;
+        private System.Windows.Forms.PictureBox pictureBoxL3;
+        private System.Windows.Forms.PictureBox pictureBoxL4;
     }
 }
 
