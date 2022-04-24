@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.IO.MemoryMappedFiles;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -54,14 +55,14 @@ namespace AccTimeBenchmark
             threadUpdate.Start();
             GetUdiskList.LoadUDList(comboBoxDisk);
             Text += Application.ProductVersion;
-            Graphics graphics = CreateGraphics();
-            float dpiX = graphics.DpiX;
-            Width = (int)(900 * (dpiX / 96.0));
-            Height = (int)(650 * (dpiX / 96.0));
+            //Graphics graphics = CreateGraphics();
+            //float dpiX = graphics.DpiX;
+            //Width = (int)(900 * (dpiX / 96.0));
+            //Height = (int)(650 * (dpiX / 96.0));
 
             labelSysversion.Text = SysInfo.GetSysVersion(); ;
             labelcpu.Text = SysInfo.GetCPUModel();
-            
+
 
 
 
@@ -313,7 +314,7 @@ namespace AccTimeBenchmark
 
 
 
-      
+
         private void SetTxt(TextBox tb, string text)
         {
             tb.Invoke(new Action(() => { tb.Text = text; }));
@@ -523,6 +524,14 @@ namespace AccTimeBenchmark
             File.WriteAllText("Multi4k_" + DateTime.Now.ToString("yyyy-MM-ddTHH-mm-ss") + ".csv", csvBuilder.ToString());
 
         }
+        private void CreateDummyFile(string fileName, long length)
+        {
+            using (var fileStream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.None))
+            {
+                fileStream.SetLength(length);
+            }
+        }
+
         private void FullSeqBenchmark(object ctobj)
         {
             chartFullSeq.Invoke(new Action(() =>
@@ -535,19 +544,22 @@ namespace AccTimeBenchmark
             {
                 progressBar1.Style = ProgressBarStyle.Marquee;
             }));
-            int ioLengthMB = 1;
+            float ioLengthMB = 1;
             int steplengthMB = 256;
 
             Random random = new Random();
-            byte[] buffer = new byte[1024 * 1024* ioLengthMB];
+            byte[] buffer = new byte[(int)(1024 * 1024 * ioLengthMB)];
             GenerateRandomArray(buffer);
             string path = diskRootPath + "test.bin";
-            if(File.Exists(path))
+            if (File.Exists(path))
                 File.Delete(path);
             long freeSpace = DiskOperation.GetHardDiskFreeSpace(diskRootPath);
-            SafeFileHandle safeFileHandle = CreateFile(path, FileAccess.ReadWrite, FileShare.None, IntPtr.Zero, FileMode.CreateNew, file_flags, IntPtr.Zero);
+            CreateDummyFile(path, freeSpace);
 
-            FileStream fileStream = new FileStream(safeFileHandle, FileAccess.ReadWrite, steplengthMB * 1024 * ioLengthMB, false);
+            SafeFileHandle safeFileHandle = CreateFile(path, FileAccess.ReadWrite, FileShare.None, IntPtr.Zero, FileMode.Open, file_flags, IntPtr.Zero);
+
+            FileStream fileStream = new FileStream(safeFileHandle, FileAccess.ReadWrite, (int)(steplengthMB * 1024 * ioLengthMB), false);
+
             //fileStream.Position = 0;
             //fileStream.Write(buffer, 0, steplengthMB * 1024 * ioLengthMB);
             //fileStream.Flush();
@@ -564,7 +576,7 @@ namespace AccTimeBenchmark
             long previousPos = 0L;
             // int loopTimes = 30;
             StringBuilder csvBuilder = new StringBuilder();
-            
+
             for (int num = 0; num < freeSpace / (steplengthMB * 1024 * 1024); num++)
             {
                 if (token.IsCancellationRequested)
@@ -572,15 +584,16 @@ namespace AccTimeBenchmark
                     break;
                 }
                 //Write steplengthMB
-                
                 double previousTime = speedTimer.Elapsed.TotalMilliseconds;
+
+
                 for (int p = 0; p < steplengthMB / ioLengthMB; p++)
                 {
                     fileStream.Position = previousPos + 1024 * 1024 * p;
-                    fileStream.Write(buffer, 0, 1024 * 1024* ioLengthMB);
+                    fileStream.Write(buffer, 0, (int)(1024 * 1024 * ioLengthMB));
                     fileStream.Flush();
                 }
-                
+
                 double curTime = speedTimer.Elapsed.TotalMilliseconds;
                 //Console.WriteLine((curTime - previousTime) / 1000.0);
                 double curSpeed = (float)steplengthMB / ((curTime - previousTime) / 1000.0);
@@ -591,8 +604,8 @@ namespace AccTimeBenchmark
                     continue;
                 chartFullSeq.Invoke(new Action(() =>
                 {
-                    //chartFullSeq.Series[0].Points.AddY(curSpeed);
-                    chartFullSeq.Series[0].Points.AddXY((num-1)/4.0, curSpeed);
+                        //chartFullSeq.Series[0].Points.AddY(curSpeed);
+                        chartFullSeq.Series[0].Points.AddXY((num - 1) / 4.0, curSpeed);
 
                 }));
 
@@ -605,9 +618,12 @@ namespace AccTimeBenchmark
             fileStream.Close();
             File.Delete(path);
             speedTimer.Stop();
-            File.WriteAllText("FullSeq_"+DateTime.Now.ToString("yyyy-MM-ddTHH-mm-ss") +".csv",csvBuilder.ToString());
-            progressBar1.Invoke(new Action(() => { progressBar1.Style = ProgressBarStyle.Continuous;
-                progressBar1.Value = 100; }));
+            File.WriteAllText("FullSeq_" + DateTime.Now.ToString("yyyy-MM-ddTHH-mm-ss") + ".csv", csvBuilder.ToString());
+            progressBar1.Invoke(new Action(() =>
+            {
+                progressBar1.Style = ProgressBarStyle.Continuous;
+                progressBar1.Value = 100;
+            }));
 
 
 
@@ -667,7 +683,7 @@ namespace AccTimeBenchmark
             {
                 ln = "Steel";
                 lc = Color.SteelBlue;
-                
+
             }
             else if (lv == 2)
             {
@@ -706,19 +722,23 @@ namespace AccTimeBenchmark
                 labelLevel.Visible = true;
             }));
 
-            pictureBoxL1.Invoke(new Action(() => {
+            pictureBoxL1.Invoke(new Action(() =>
+            {
                 pictureBoxL1.Image = L1;
                 pictureBoxL1.Visible = true;
             }));
-            pictureBoxL2.Invoke(new Action(() => {
+            pictureBoxL2.Invoke(new Action(() =>
+            {
                 pictureBoxL2.Image = L2;
                 pictureBoxL2.Visible = true;
             }));
-            pictureBoxL3.Invoke(new Action(() => {
+            pictureBoxL3.Invoke(new Action(() =>
+            {
                 pictureBoxL3.Image = L3;
                 pictureBoxL3.Visible = true;
             }));
-            pictureBoxL4.Invoke(new Action(() => {
+            pictureBoxL4.Invoke(new Action(() =>
+            {
                 pictureBoxL4.Image = L4;
                 pictureBoxL4.Visible = true;
             }));
@@ -732,7 +752,7 @@ namespace AccTimeBenchmark
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Process.Start("http://bbs.luobotou.org/forum-88-1.html");
+            Process.Start("https://bbs.luobotou.org/forum-88-1.html");
         }
 
         private void labelLevel_Click(object sender, EventArgs e)
@@ -742,12 +762,12 @@ namespace AccTimeBenchmark
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
-            Process.Start("http://bbs.luobotou.org/forum-88-1.html");
+            Process.Start("https://bbs.luobotou.org/forum-88-1.html");
         }
 
         private void pictureBox2_Click(object sender, EventArgs e)
         {
-            Process.Start("http://bbs.luobotou.org/forum-88-1.html");
+            Process.Start("https://bbs.luobotou.org/forum-88-1.html");
         }
 
         private void chartFullSeq_Click(object sender, EventArgs e)
@@ -758,7 +778,7 @@ namespace AccTimeBenchmark
         private void comboBoxDisk_SelectedIndexChanged(object sender, EventArgs e)
         {
             UdObj = (UsbDisk)comboBoxDisk.SelectedItem;
-            if(UdObj!=null)
+            if (UdObj != null)
                 diskRootPath = UdObj.Volume.Substring(0, 1) + ":\\";
         }
 

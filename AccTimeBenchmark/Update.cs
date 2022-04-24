@@ -44,7 +44,7 @@ namespace AccTimeBenchmark
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Process.Start("http://bbs.luobotou.org/thread-11206-1-1.html");
+            Process.Start("https://bbs.luobotou.org/thread-11206-1-1.html");
             this.Close();
         }
     }
