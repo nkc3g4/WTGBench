@@ -636,7 +636,7 @@ namespace AccTimeBenchmark
 
             }
 
-            //fileStream.Close();
+            fileStream.Close();
             File.Delete(path);
             speedTimer.Stop();
             File.WriteAllText("FullSeq_" + DateTime.Now.ToString("yyyy-MM-ddTHH-mm-ss") + ".csv", csvBuilder.ToString());
