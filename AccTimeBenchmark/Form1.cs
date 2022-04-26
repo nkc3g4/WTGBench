@@ -617,7 +617,7 @@ namespace AccTimeBenchmark
 
                 if (num == 0)
                     continue;
-                _ = UpdateChart(csvBuilder, num, curSpeed);
+                _ = UpdateChart(csvBuilder, num, curSpeed, steplengthMB);
                 //Thread tChart = new Thread(new ThreadStart(() =>
                 //{
                 //    chartFullSeq.Invoke(new Action(() =>
@@ -647,14 +647,14 @@ namespace AccTimeBenchmark
             }));
 
         }
-        private async Task UpdateChart(StringBuilder csvBuilder, int num, double curSpeed)
+        private async Task UpdateChart(StringBuilder csvBuilder, int num, double curSpeed, int steplengthMB)
         {
             await Task.Run(() =>
             {
                 chartFullSeq.Invoke(new Action(() =>
                 {
                     //chartFullSeq.Series[0].Points.AddY(curSpeed);
-                    chartFullSeq.Series[0].Points.AddXY((num - 1) / 4.0, curSpeed);
+                    chartFullSeq.Series[0].Points.AddXY((num - 1) / (1024.0 / steplengthMB), curSpeed);
 
                 }));
 
