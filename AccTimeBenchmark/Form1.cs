@@ -7,6 +7,7 @@ using System.Drawing;
 using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -27,12 +28,13 @@ namespace AccTimeBenchmark
         //private long test4kCount = 8192 * 8192;
         private static uint FILE_FLAG_NO_BUFFERING = 536870912u;
         private static uint FILE_FLAG_WRITE_THROUGH = 2147483648u;
-        private static uint file_flags = FILE_FLAG_NO_BUFFERING; //| FILE_FLAG_WRITE_THROUGH;
+        private static uint file_flags = FILE_FLAG_NO_BUFFERING | FILE_FLAG_WRITE_THROUGH;
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         private static extern SafeFileHandle CreateFile(string lpFileName, FileAccess dwDesiredAccess, FileShare dwShareMode, IntPtr lpSecurityAttributes, FileMode dwCreationDisposition, uint dwFlagsAndAttributes, IntPtr hTemplateFile);
 
         private readonly object threadCntLock = new object();
         private DateTime start4kTime;
+        private int chartNum = 0;
         private void GenerateRandomArray(byte[] rnd_array)
         {
             Random random = new Random();
@@ -45,6 +47,8 @@ namespace AccTimeBenchmark
         public Form1()
         {
             InitializeComponent();
+
+
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -54,6 +58,7 @@ namespace AccTimeBenchmark
             Thread threadUpdate = new Thread(swo.Update);
             threadUpdate.Start();
             GetUdiskList.LoadUDList(comboBoxDisk);
+
             Text += Application.ProductVersion;
             //Graphics graphics = CreateGraphics();
             //float dpiX = graphics.DpiX;
@@ -321,6 +326,9 @@ namespace AccTimeBenchmark
         }
         private void button1_Click(object sender, EventArgs e)
         {
+            Debug.WriteLine("Hello Debug!");
+            Console.WriteLine("Hello Console!");
+
             if (UdObj == null)
             {
                 MessageBox.Show("请选择移动磁盘");
@@ -544,8 +552,8 @@ namespace AccTimeBenchmark
             {
                 progressBar1.Style = ProgressBarStyle.Marquee;
             }));
-            float ioLengthMB = 1;
-            int steplengthMB = 256;
+            float ioLengthMB = 64;
+            int steplengthMB = 1024;
 
             Random random = new Random();
             byte[] buffer = new byte[(int)(1024 * 1024 * ioLengthMB)];
@@ -554,11 +562,11 @@ namespace AccTimeBenchmark
             if (File.Exists(path))
                 File.Delete(path);
             long freeSpace = DiskOperation.GetHardDiskFreeSpace(diskRootPath);
-            CreateDummyFile(path, freeSpace);
+            CreateDummyFile(path, freeSpace - 100 * 1024 * 1024);
 
             SafeFileHandle safeFileHandle = CreateFile(path, FileAccess.ReadWrite, FileShare.None, IntPtr.Zero, FileMode.Open, file_flags, IntPtr.Zero);
 
-            FileStream fileStream = new FileStream(safeFileHandle, FileAccess.ReadWrite, (int)(steplengthMB * 1024 * ioLengthMB), false);
+            using FileStream fileStream = new FileStream(safeFileHandle, FileAccess.ReadWrite, 0, false);
 
             //fileStream.Position = 0;
             //fileStream.Write(buffer, 0, steplengthMB * 1024 * ioLengthMB);
@@ -579,43 +587,56 @@ namespace AccTimeBenchmark
 
             for (int num = 0; num < freeSpace / (steplengthMB * 1024 * 1024); num++)
             {
-                if (token.IsCancellationRequested)
-                {
-                    break;
-                }
+                //if (token.IsCancellationRequested)
+                //{
+                //    break;
+                //}
+                //MessageBox.Show((steplengthMB * 1024 * 1024).ToString());
+                //          using SafeFileHandle handle = File.OpenHandle(path + num.ToString(), FileMode.Create, FileAccess.Write, FileShare.None, FileOptions.WriteThrough
+                //, preallocationSize: steplengthMB * 1024 * 1024); // new API (preview 6)
+                //          using FileStream fileStream = new FileStream(handle, FileAccess.ReadWrite, 0, false);
+
                 //Write steplengthMB
                 double previousTime = speedTimer.Elapsed.TotalMilliseconds;
-
-
                 for (int p = 0; p < steplengthMB / ioLengthMB; p++)
                 {
-                    fileStream.Position = previousPos + 1024 * 1024 * p;
+                    fileStream.Position = previousPos + (int)(1024 * 1024 * p * ioLengthMB);
                     fileStream.Write(buffer, 0, (int)(1024 * 1024 * ioLengthMB));
-                    fileStream.Flush();
+                    //fileStream.Flush();
                 }
-
                 double curTime = speedTimer.Elapsed.TotalMilliseconds;
+
                 //Console.WriteLine((curTime - previousTime) / 1000.0);
                 double curSpeed = (float)steplengthMB / ((curTime - previousTime) / 1000.0);
+                //Console.WriteLine(curSpeed);
+                Debug.WriteLine(curSpeed);
+
                 previousPos = previousPos + steplengthMB * 1024 * 1024;
-                GenerateRandomArray(buffer);
-                Console.WriteLine(curSpeed);
+                //continue;
+                //GenerateRandomArray(buffer);
+
                 if (num == 0)
                     continue;
-                chartFullSeq.Invoke(new Action(() =>
-                {
-                        //chartFullSeq.Series[0].Points.AddY(curSpeed);
-                        chartFullSeq.Series[0].Points.AddXY((num - 1) / 4.0, curSpeed);
+                _ = UpdateChart(csvBuilder, num, curSpeed);
+                //Thread tChart = new Thread(new ThreadStart(() =>
+                //{
+                //    chartFullSeq.Invoke(new Action(() =>
+                //    {
+                //        //chartFullSeq.Series[0].Points.AddY(curSpeed);
+                //        chartFullSeq.Series[0].Points.AddXY((num - 1) / 4.0, curSpeed);
 
-                }));
+                //    }));
 
-                csvBuilder.Append(((num - 1) / 4.0).ToString());
-                csvBuilder.Append(",");
-                csvBuilder.Append(curSpeed);
-                csvBuilder.AppendLine(",");
+                //    csvBuilder.Append(((num - 1) / 4.0).ToString());
+                //    csvBuilder.Append(",");
+                //    csvBuilder.Append(curSpeed);
+                //    csvBuilder.AppendLine(",");
+
+                //}));
+
             }
 
-            fileStream.Close();
+            //fileStream.Close();
             File.Delete(path);
             speedTimer.Stop();
             File.WriteAllText("FullSeq_" + DateTime.Now.ToString("yyyy-MM-ddTHH-mm-ss") + ".csv", csvBuilder.ToString());
@@ -625,9 +646,25 @@ namespace AccTimeBenchmark
                 progressBar1.Value = 100;
             }));
 
-
-
         }
+        private async Task UpdateChart(StringBuilder csvBuilder, int num, double curSpeed)
+        {
+            await Task.Run(() =>
+            {
+                chartFullSeq.Invoke(new Action(() =>
+                {
+                    //chartFullSeq.Series[0].Points.AddY(curSpeed);
+                    chartFullSeq.Series[0].Points.AddXY((num - 1) / 4.0, curSpeed);
+
+                }));
+
+                csvBuilder.Append(((num - 1) / 4.0).ToString());
+                csvBuilder.Append(",");
+                csvBuilder.Append(curSpeed);
+                csvBuilder.AppendLine(",");
+            });
+        }
+
         private void FastBenchmark(object ctobj)
         {
             chart1.Invoke(new Action(() =>

@@ -456,7 +456,7 @@
             series3.Name = "Series1";
             series3.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
             this.chartFullSeq.Series.Add(series3);
-            this.chartFullSeq.Size = new System.Drawing.Size(1686, 488);
+            this.chartFullSeq.Size = new System.Drawing.Size(1686, 375);
             this.chartFullSeq.TabIndex = 52;
             this.chartFullSeq.Text = "chart2";
             title3.Name = "Title1";
@@ -497,7 +497,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(192F, 192F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.ClientSize = new System.Drawing.Size(2284, 1234);
+            this.ClientSize = new System.Drawing.Size(1750, 1100);
             this.Controls.Add(this.labelcpu);
             this.Controls.Add(this.comboBoxDisk);
             this.Controls.Add(this.labelSysversion);
