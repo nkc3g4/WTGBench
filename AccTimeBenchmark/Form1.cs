@@ -32,9 +32,10 @@ namespace AccTimeBenchmark
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         private static extern SafeFileHandle CreateFile(string lpFileName, FileAccess dwDesiredAccess, FileShare dwShareMode, IntPtr lpSecurityAttributes, FileMode dwCreationDisposition, uint dwFlagsAndAttributes, IntPtr hTemplateFile);
 
-        private readonly object threadCntLock = new object();
         private DateTime start4kTime;
-        private int chartNum = 0;
+
+        private static CancellationTokenSource cts = new CancellationTokenSource();
+
         private void GenerateRandomArray(byte[] rnd_array)
         {
             Random random = new Random();
@@ -258,7 +259,6 @@ namespace AccTimeBenchmark
             {
                 if (token.IsCancellationRequested)
                 {
-
                     break;
                 }
                 long num2 = random.Next((int)(dataLength / 4096 + 1));
@@ -282,6 +282,10 @@ namespace AccTimeBenchmark
 
             fileStream.Close();
             temp_timer.Stop();
+            if (token.IsCancellationRequested)
+            {
+                return 0.0;
+            }
             progressBar1.Invoke(new Action(() => { progressBar1.Value = 100; }));
 
             double avg = testPoints.Average();
@@ -326,8 +330,6 @@ namespace AccTimeBenchmark
         }
         private void button1_Click(object sender, EventArgs e)
         {
-            Debug.WriteLine("Hello Debug!");
-            Console.WriteLine("Hello Console!");
 
             if (UdObj == null)
             {
@@ -339,11 +341,11 @@ namespace AccTimeBenchmark
                 //Write4K_MultiThread(txtUDisk.Text + "test.bin", 16);
                 //return;
             }
-            CancellationTokenSource cts = new CancellationTokenSource();
 
             if (btnStart.Text == "开始")
             {
-
+                cts.Dispose(); 
+                cts = new CancellationTokenSource();
                 tBench = new Thread(() =>
                 {
                     try
@@ -404,9 +406,9 @@ namespace AccTimeBenchmark
                 if (tBench != null)
                 {
                     cts.Cancel();
-
-                    tBench.Abort();
-                    Environment.Exit(0);
+                    
+                    //tBench.Abort();
+                    //Environment.Exit(0);
 
                 }
                 btnStart.Text = "开始";
@@ -448,7 +450,6 @@ namespace AccTimeBenchmark
                         int index = i;
                         taskArray[index] = Task<long>.Factory.StartNew(() =>
                         {
-                            Console.WriteLine(index);
                             return ReadWrite(fsList[index], dataLength, buffer, testLine.IOSizes, runTime, testLine.SeqNess, testLine.WriteProportion, ctobj);
                         }, (CancellationToken)ctobj);
 
@@ -587,10 +588,10 @@ namespace AccTimeBenchmark
 
             for (int num = 0; num < freeSpace / (steplengthMB * 1024 * 1024); num++)
             {
-                //if (token.IsCancellationRequested)
-                //{
-                //    break;
-                //}
+                if (token.IsCancellationRequested)
+                {
+                    break;
+                }
                 //MessageBox.Show((steplengthMB * 1024 * 1024).ToString());
                 //          using SafeFileHandle handle = File.OpenHandle(path + num.ToString(), FileMode.Create, FileAccess.Write, FileShare.None, FileOptions.WriteThrough
                 //, preallocationSize: steplengthMB * 1024 * 1024); // new API (preview 6)
@@ -827,7 +828,7 @@ namespace AccTimeBenchmark
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                Debug.WriteLine(ex);
             }
         }
 
