@@ -336,6 +336,7 @@ namespace AccTimeBenchmark
                 MessageBox.Show("请选择移动磁盘");
                 return;
             }
+            diskRootPath = UdObj.Volume.Substring(0, 1) + ":\\";
             if (checkBoxScenario.Checked)
             {
                 //Write4K_MultiThread(txtUDisk.Text + "test.bin", 16);
@@ -816,8 +817,8 @@ namespace AccTimeBenchmark
         private void comboBoxDisk_SelectedIndexChanged(object sender, EventArgs e)
         {
             UdObj = (UsbDisk)comboBoxDisk.SelectedItem;
-            if (UdObj != null)
-                diskRootPath = UdObj.Volume.Substring(0, 1) + ":\\";
+            //if (UdObj != null)
+            //    diskRootPath = UdObj.Volume.Substring(0, 1) + ":\\";
         }
 
         private void comboBoxDisk_MouseHover(object sender, EventArgs e)

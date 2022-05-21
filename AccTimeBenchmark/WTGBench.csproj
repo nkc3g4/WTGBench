@@ -8,8 +8,9 @@
     <RootNamespace>AccTimeBenchmark</RootNamespace>
     <AssemblyName>WTGBench</AssemblyName>
     <ApplicationIcon>speed_128px_1151078_easyicon.net.ico</ApplicationIcon>
-    <AssemblyVersion>2.8.0.0</AssemblyVersion>
-    <FileVersion>2.8.0.0</FileVersion>
+    <AssemblyVersion>2.8.1.0</AssemblyVersion>
+    <FileVersion>2.8.1.0</FileVersion>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
 
   </PropertyGroup>
   <ItemGroup>
