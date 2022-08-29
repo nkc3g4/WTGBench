@@ -47,7 +47,9 @@ namespace AccTimeBenchmark
         Thread tBench;
         public Form1()
         {
+            AutoScaleBaseSize = new Size(3, 10);
             InitializeComponent();
+           // MessageBox.Show(this.AutoScaleBaseSize.ToString());
 
 
         }
