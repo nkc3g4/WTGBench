@@ -49,7 +49,6 @@ namespace AccTimeBenchmark
         {
             AutoScaleBaseSize = new Size(3, 10);
             InitializeComponent();
-           // MessageBox.Show(this.AutoScaleBaseSize.ToString());
 
 
         }
@@ -71,10 +70,6 @@ namespace AccTimeBenchmark
             labelSysversion.Text = SysInfo.GetSysVersion(); ;
             labelcpu.Text = SysInfo.GetCPUModel();
 
-
-
-
-
         }
         private double WriteSeq(string path, object ctobj)
         {
@@ -93,13 +88,14 @@ namespace AccTimeBenchmark
             GenerateRandomArray(seqBuffer);
             List<double> seqPoints = new List<double>();
             long testDuration = 10 * 1000;
-            for (dataLength = 0L; dataLength < 10737418240; dataLength += seqSize)
+            long maximumDataLength = 10737418240L;
+            for (dataLength = 0L; ; dataLength += seqSize)
             {
                 if (token.IsCancellationRequested)
                 {
                     break;
                 }
-                fileStream.Position = dataLength;
+                fileStream.Position = dataLength % maximumDataLength;
 
                 long preTime = sw.ElapsedMilliseconds;
                 fileStream.Write(seqBuffer, 0, seqSize);
@@ -305,7 +301,6 @@ namespace AccTimeBenchmark
             }));
 
             testPoints.AddRange(testPoints.GetRange(LoopTime4k / 2, LoopTime4k / 2));
-            //testPoints.RemoveAll((m) => { return m > avg * 1.5; });
 
             int cnt = testPoints.Count;
 
@@ -347,7 +342,7 @@ namespace AccTimeBenchmark
 
             if (btnStart.Text == "开始")
             {
-                cts.Dispose(); 
+                cts.Dispose();
                 cts = new CancellationTokenSource();
                 tBench = new Thread(() =>
                 {
@@ -409,9 +404,6 @@ namespace AccTimeBenchmark
                 if (tBench != null)
                 {
                     cts.Cancel();
-                    
-                    //tBench.Abort();
-                    //Environment.Exit(0);
 
                 }
                 btnStart.Text = "开始";
@@ -536,13 +528,6 @@ namespace AccTimeBenchmark
             File.WriteAllText("Multi4k_" + DateTime.Now.ToString("yyyy-MM-ddTHH-mm-ss") + ".csv", csvBuilder.ToString());
 
         }
-        private void CreateDummyFile(string fileName, long length)
-        {
-            using (var fileStream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.None))
-            {
-                fileStream.SetLength(length);
-            }
-        }
 
         private void FullSeqBenchmark(object ctobj)
         {
@@ -566,27 +551,17 @@ namespace AccTimeBenchmark
             if (File.Exists(path))
                 File.Delete(path);
             long freeSpace = DiskOperation.GetHardDiskFreeSpace(diskRootPath);
-            CreateDummyFile(path, freeSpace - 100 * 1024 * 1024);
+            //CreateDummyFile(path, freeSpace - 100 * 1024 * 1024);
 
-            SafeFileHandle safeFileHandle = CreateFile(path, FileAccess.ReadWrite, FileShare.None, IntPtr.Zero, FileMode.Open, file_flags, IntPtr.Zero);
+            SafeFileHandle safeFileHandle = CreateFile(path, FileAccess.ReadWrite, FileShare.None, IntPtr.Zero, FileMode.OpenOrCreate, file_flags, IntPtr.Zero);
 
             using FileStream fileStream = new FileStream(safeFileHandle, FileAccess.ReadWrite, 0, false);
 
-            //fileStream.Position = 0;
-            //fileStream.Write(buffer, 0, steplengthMB * 1024 * ioLengthMB);
-            //fileStream.Flush();
-            //progressBar1.Invoke(new Action(() =>
-            //{
-            //    progressBar1.Style = ProgressBarStyle.Blocks;
-            //}));
             List<double> testPoints = new List<double>();
             Stopwatch speedTimer = new Stopwatch();
-            //Console.WriteLine(Stopwatch.IsHighResolution);
             speedTimer.Start();
             Thread.Sleep(3000);
-            //long prenum = 0L;
             long previousPos = 0L;
-            // int loopTimes = 30;
             StringBuilder csvBuilder = new StringBuilder();
 
             for (int num = 0; num < freeSpace / (steplengthMB * 1024 * 1024); num++)
@@ -595,10 +570,6 @@ namespace AccTimeBenchmark
                 {
                     break;
                 }
-                //MessageBox.Show((steplengthMB * 1024 * 1024).ToString());
-                //          using SafeFileHandle handle = File.OpenHandle(path + num.ToString(), FileMode.Create, FileAccess.Write, FileShare.None, FileOptions.WriteThrough
-                //, preallocationSize: steplengthMB * 1024 * 1024); // new API (preview 6)
-                //          using FileStream fileStream = new FileStream(handle, FileAccess.ReadWrite, 0, false);
 
                 //Write steplengthMB
                 double previousTime = speedTimer.Elapsed.TotalMilliseconds;
@@ -610,33 +581,14 @@ namespace AccTimeBenchmark
                 }
                 double curTime = speedTimer.Elapsed.TotalMilliseconds;
 
-                //Console.WriteLine((curTime - previousTime) / 1000.0);
                 double curSpeed = (float)steplengthMB / ((curTime - previousTime) / 1000.0);
-                //Console.WriteLine(curSpeed);
                 Debug.WriteLine(curSpeed);
 
                 previousPos = previousPos + steplengthMB * 1024 * 1024;
-                //continue;
-                //GenerateRandomArray(buffer);
 
                 if (num == 0)
                     continue;
                 _ = UpdateChart(csvBuilder, num, curSpeed, steplengthMB);
-                //Thread tChart = new Thread(new ThreadStart(() =>
-                //{
-                //    chartFullSeq.Invoke(new Action(() =>
-                //    {
-                //        //chartFullSeq.Series[0].Points.AddY(curSpeed);
-                //        chartFullSeq.Series[0].Points.AddXY((num - 1) / 4.0, curSpeed);
-
-                //    }));
-
-                //    csvBuilder.Append(((num - 1) / 4.0).ToString());
-                //    csvBuilder.Append(",");
-                //    csvBuilder.Append(curSpeed);
-                //    csvBuilder.AppendLine(",");
-
-                //}));
 
             }
 
@@ -657,7 +609,6 @@ namespace AccTimeBenchmark
             {
                 chartFullSeq.Invoke(new Action(() =>
                 {
-                    //chartFullSeq.Series[0].Points.AddY(curSpeed);
                     chartFullSeq.Series[0].Points.AddXY((num - 1) / (1024.0 / steplengthMB), curSpeed);
 
                 }));
@@ -677,21 +628,14 @@ namespace AccTimeBenchmark
             }));
             double adj4k = 0;
             double timeseq = WriteSeq(diskRootPath + "test.bin", ctobj);
-            //SetTxt(txtBenchSize, (dataLength / (1024 * 1024)).ToString());
-            //dataLength
 
             SetTxt(txtSeqResult, timeseq.ToString("f4") + " MB/s");
-            //txtSeqResult.Invoke(new Action(() => { txtSeqResult.Text = timeseq.ToString() + "MB/S"; }));
             double time4k = Write4k(diskRootPath + "test.bin", ref adj4k, ctobj);
             txt4kResult.Invoke(new Action(() => { txt4kResult.Text = time4k.ToString("f4") + " MB/s"; }));
             txtA4kResult.Invoke(new Action(() => { txtA4kResult.Text = adj4k.ToString("f4") + " MB/s"; }));
             File.Delete(diskRootPath + "test.bin");
-            //double timeAcc = write_access(txtUDisk.Text + "test.bin");
-            //txtAccResult.Invoke(new Action(() => { txtAccResult.Text = timeAcc.ToString() + " ms"; }));
-            //btnStart.Invoke(new Action(() => { btnStart.Text = "开始"; }));
 
             double score = adj4k + Math.Log(1 + (timeseq / 1000));
-            //MessageBox.Show(bmr.Write4K.ToString());
             int lv = 0;
             if (score > 30)
             {
@@ -819,8 +763,6 @@ namespace AccTimeBenchmark
         private void comboBoxDisk_SelectedIndexChanged(object sender, EventArgs e)
         {
             UdObj = (UsbDisk)comboBoxDisk.SelectedItem;
-            //if (UdObj != null)
-            //    diskRootPath = UdObj.Volume.Substring(0, 1) + ":\\";
         }
 
         private void comboBoxDisk_MouseHover(object sender, EventArgs e)
